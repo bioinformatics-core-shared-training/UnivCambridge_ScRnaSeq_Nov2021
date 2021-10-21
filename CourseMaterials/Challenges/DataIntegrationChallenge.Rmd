@@ -1,0 +1,41 @@
+---
+title: "DataIntergrationChallenge"
+author: "Abbi Edwards"
+date: "18/07/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(scater)
+library(scran)
+library(batchelor)
+library(bluster)
+library(tidyverse)
+library(pheatmap)
+library(clustree)
+library(Cairo)
+library(BiocSingular)
+library(cowplot)
+
+```
+
+## Loading the data you need
+
+
+```{r Load}
+
+p.tsne <- readRDS("../Robjects/DataIntegration_p.tsne.rds")
+mnn.out <- readRDS("../Robjects/DataIntegration_mnn.out.rds")
+clusters.mnn <- readRDS("../Robjects/DataIntegration_clusters.mnn.rds")
+
+```
+
+## Challenge 1
+
+Draw the TSNE for the fastmnn corrected data. Compare it with the uncorrected TSNE, what do you think?
+
+```{r yourCode1}
+
+
+```
