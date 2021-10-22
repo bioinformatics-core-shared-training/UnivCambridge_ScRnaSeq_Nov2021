@@ -1,0 +1,398 @@
+---
+title: Introduction to single-cell RNA-seq analysis
+subtitle: Quality Control
+author: "Ashley Sawle"
+date: '14th October 2021'
+output:
+  ioslides_presentation:
+    keep_md: true
+    widescreen: true
+    smaller: true
+    logo: Images/crukcc-transparent-small.png
+    css: css/stylesheet.css
+---
+
+<style type="text/css">
+slides > slide:not(.nobackground):after {
+  content: '';
+}
+</style>
+
+```{r include=FALSE}
+library(DropletUtils)
+library(scater)
+library(tidyverse)
+library(patchwork)
+options(max.print = 2000)
+```
+
+
+## Single Cell RNAseq Analysis Workflow
+
+```{r echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics('Images/workflow_QC.svg')
+```
+
+## Quality Control
+
+<div style="width: 55%; float: left;">
+
+We will now check the quality of the data further:
+
+* Mapping quality
+* Cell counts
+* Distribution of keys quality metrics
+
+We will then:
+
+* Filter genes with very low expression
+* Identify low-quality cells
+* Filter and/or mark low quality cells
+    
+</div>
+
+## Quality Control
+
+<div style="width: 55%; float: left;">
+
+We will now check the quality of the data further:
+
+* Mapping quality
+* Cell counts
+* Distribution of keys quality metrics
+
+We will then:
+
+* Filter genes with very low expression
+* Identify low-quality cells
+* Filter and/or mark low quality cells
+    
+</div>
+
+<div style="width: 25%; float: right; padding-right: 10%; padding-top: 10%">
+<img src="Images/Rlogo.svg" class="centerimg" style="width: 95%">
+</div>
+
+
+## Quality Control
+
+<div style="width: 55%; float: left;">
+
+Bioconductor R packages:
+
+* _scater_
+* _DropletUtils_
+
+**Orchestrating Single-Cell Analysis with Bioconductor**
+_Robert Amezquita, Aaron Lun, Stephanie Hicks, Raphael Gottardo_
+
+http://bioconductor.org/books/release/OSCA/
+    
+</div>
+
+<div style="width: 25%; float: right; padding-right: 10%; padding-top: 10%">
+<img src="Images/Bioconductor-serial.gif" class="centerimg" style="width: 95%">
+</div>
+
+## Read CellRanger outputs into R
+
+```{r echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics('Images/sce_object_1.png')
+```
+
+### Loading a single sample
+
+```{r}
+sample.path <- c(SRR9264343 = "CellRanger_Outputs/SRR9264343/outs/filtered_feature_bc_matrix/")
+sce <- read10xCounts(sample.path, col.names=TRUE)
+```
+
+### Loading multiple samples
+
+```{r eval=FALSE}
+list_of_files <- c(SRR9264343 = "CellRanger_Outputs/SRR9264343/outs/filtered_feature_bc_matrix",
+                   SRR9264344 = "CellRanger_Outputs/SRR9264344/outs/filtered_feature_bc_matrix",
+                   SRR9264347 = "CellRanger_Outputs/SRR9264347/outs/filtered_feature_bc_matrix")
+sce <- read10xCounts(sample.path, col.names=TRUE)
+```
+
+#### $\rightarrow$ _SingleCellExperiment_ object
+
+## The _SingleCellExperiment_ object
+
+```{r echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics('Images/sce_object_2.png')
+```
+
+## The Counts Matrix
+
+```{r echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics('Images/sce_object_counts_matrix.png')
+```
+
+## The Counts Matrix
+
+```{r countsMatrix, eval = FALSE}
+counts(sce)
+```
+
+```{r echo = FALSE}
+# This just brings some genes with counts in the first few columns to the top
+# of the matrix so we have something to look at other than dots. 
+sce <- sce[c(60:36601, 1:59), ]
+counts(sce)
+```
+
+## Feature metadata
+
+```{r echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics('Images/sce_object_feature_metadata.png')
+```
+
+## Feature metadata
+
+```{r example_row}
+rowData(sce)
+```
+
+## Droplet annotation (Cell metadata)
+
+```{r echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics('Images/sce_object_cell_metadata.png')
+```
+
+## Droplet annotation (Cell metadata)
+
+```{r example_col}
+colData(sce)
+```
+
+```{r eval = FALSE}
+colnames(counts(sce))
+```
+
+```{r echo = FALSE}
+head(colnames(counts(sce)), n = 22)
+```
+
+## Properties of RNAseq data - Number of genes detected per cell
+
+```{r eval = FALSE, include = FALSE}
+tibble(`Gene per cell` = colSums(counts(sce) > 0)) %>% 
+      ggplot(aes(x = `Gene per cell`)) +
+        geom_density() +
+        theme(plot.background = element_rect(fill = "transparent", colour = NA))
+ggsave('Images/genes_per_cell.png',
+       bg='transparent',
+       width = 8,
+       height = 4.1)
+```
+
+```{r echo=FALSE, out.width='90%', fig.align='center'}
+knitr::include_graphics('Images/genes_per_cell.png')
+```
+
+## Properties of RNAseq data - Total UMIs 
+
+```{r, eval = FALSE, include = FALSE}
+set.seed(232)
+tmpCounts <- counts(sce)[,sample(ncol(sce), 1000)]
+
+tibble(X  =  rowSums(tmpCounts),
+       Y  =  rowMeans(tmpCounts > 0)) %>%  
+    ggplot(aes(x = X, y  =  Y)) +
+        geom_point() +
+        labs(x = "total number of UMIs",
+             y = "proportion of cells expressing the gene") +
+        scale_x_log10() +
+        theme(plot.background = element_rect(fill = "transparent", colour = NA))
+
+ggsave('Images/genes_by_umi.png',
+       bg='transparent',
+       width = 4,
+       height = 4)
+```
+
+```{r echo=FALSE, out.width='50%', fig.align='center'}
+knitr::include_graphics('Images/genes_by_umi.png')
+```
+
+```{r echo = FALSE}
+detected_genes <- rowSums(counts(sce)) > 0
+sce <- sce[detected_genes,]
+```
+
+## Properties of RNAseq data - Distribution of counts for a gene across cells
+
+```{r, eval = FALSE, include = FALSE}
+cnts <- counts(sce)
+most_expressed <- rowSums(cnts) %>%  
+    enframe(name = "Gene", value = "Total") %>%  
+    top_n(50, wt = Total)
+subCnts <- cnts[most_expressed$Gene, ]
+rel_expr <- t(subCnts) * 100 / colSums(cnts)
+
+as.matrix(rel_expr) %>%  
+    as.data.frame() %>%  
+    pivot_longer(names_to = "Gene", values_to = "Count", everything()) %>%  
+    left_join(most_expressed, by = "Gene") %>%  
+    mutate(across(Gene, fct_reorder, Total, unique)) %>%  
+    ggplot(aes(x = Gene, y = Count)) +
+        geom_boxplot() +
+        coord_flip() +
+        theme(plot.background = element_rect(fill = "transparent", colour = NA))
+
+ggsave('Images/top_expressed_genes.png',
+       bg='transparent',
+       width = 4,
+       height = 4)
+```
+
+```{r echo=FALSE, out.width='50%', fig.align='center'}
+knitr::include_graphics('Images/top_expressed_genes.png')
+```
+
+## Properties of RNAseq data - Distribution of counts for a gene across cells
+
+```{r echo=FALSE, out.width='50%', fig.align='center'}
+knitr::include_graphics('Images/top_expressed_genes_hbb.png')
+```
+
+## Quality Control
+
+* Not all of the droplets called as cells by CellRanger will contain good quality cells    
+* Poor quality droplets will adversely affect downstream analysis  
+* We can use QC metrics to filter out poor quality droplets:  
+    * Total UMIs (Library size)  
+    * Number of gene detected
+    * Proportion of UMIs mapping to mitochondrial genes 
+
+## Quality Control
+
+* Add gene annotation to identify Mt genes - `AnnotationHub`
+
+```{r eval = FALSE, echo = FALSE}
+library(BiocParallel)
+library(AnnotationHub)
+ah <- AnnotationHub()
+ens.mm.98 <- query(ah, c("Homo sapiens", "EnsDb", 98))[[1]]
+
+genes <- rowData(sce)$ID
+gene_annot <- AnnotationDbi::select(ens.mm.98,
+                                    keys = genes,
+                                    keytype = "GENEID",
+                                    columns = c("GENEID", "SEQNAME")) %>%
+    set_names(c("ID", "Chromosome"))
+rowData(sce) <- merge(rowData(sce), gene_annot, by = "ID", sort=FALSE)
+rownames(rowData(sce)) <- rowData(sce)$ID
+is.mito <- which(rowData(sce)$Chromosome=="MT")
+bp.params <- MulticoreParam(workers = 7)
+sce <- addPerCellQC(sce, subsets = list(Mito = is.mito), BPPARAM  =  bp.params)
+saveRDS(sce, "sce_annotated.rds")
+```
+
+```{r echo = FALSE}
+sce <- readRDS("sce_annotated.rds")
+```
+
+```{r}
+rowData(sce)
+```
+
+## Quality Control
+
+```{r eval = FALSE}
+is.mito <- which(rowData(sce)$Chromosome=="MT")
+sce <- addPerCellQC(sce, subsets = list(Mito = is.mito))
+```
+
+Adds six columns to the droplet annotation:
+
+* **sum**: total UMI count  
+* **detected**: number of features (genes) detected  
+* **subsets_Mito_sum**: number of UMIs mapped to mitochondrial transcripts  
+* **subsets_Mito_detected**: number of mitochondrial genes detected  
+* **subsets_Mito_percent**: percentage of UMIs mapped to mitochondrial transcripts  
+* **total**: also the total UMI count  
+
+
+## Quality Control
+
+```{r eval = FALSE}
+is.mito <- which(rowData(sce)$Chromosome=="MT")
+sce <- addPerCellQC(sce, subsets = list(Mito = is.mito))
+```
+
+```{r eval = FALSE}
+colData(sce)
+```
+
+<pre >## DataFrame with 3094 rows and 8 columns
+##                         Sample            Barcode       <span style="color:black; font-weight: bold">sum  detected</span> subsets_Mito_sum
+##                    <character>        <character> <numeric> <integer>        <numeric>
+## AAACCTGAGACTTTCG-1  SRR9264343 AAACCTGAGACTTTCG-1      6677      2056              292
+## AAACCTGGTCTTCAAG-1  SRR9264343 AAACCTGGTCTTCAAG-1     12064      3177              575
+## AAACCTGGTGCAACTT-1  SRR9264343 AAACCTGGTGCAACTT-1       843       363              428
+## AAACCTGGTGTTGAGG-1  SRR9264343 AAACCTGGTGTTGAGG-1      8175      2570              429
+## AAACCTGTCCCAAGTA-1  SRR9264343 AAACCTGTCCCAAGTA-1      8638      2389              526
+## ...                        ...                ...       ...       ...              ...
+## TTTGGTTTCTTTAGGG-1  SRR9264343 TTTGGTTTCTTTAGGG-1      3489      1600              239
+## TTTGTCAAGAAACGAG-1  SRR9264343 TTTGTCAAGAAACGAG-1      7809      2415              548
+## TTTGTCAAGGACGAAA-1  SRR9264343 TTTGTCAAGGACGAAA-1      9486      2589              503
+## TTTGTCACAGGCTCAC-1  SRR9264343 TTTGTCACAGGCTCAC-1      1182       591              224
+## TTTGTCAGTTCGGCAC-1  SRR9264343 TTTGTCAGTTCGGCAC-1     10514      2831              484
+##                    subsets_Mito_detected <span style="color:black; font-weight: bold">subsets_Mito_percent</span>     total
+##                                <integer>            <numeric> <numeric>
+## AAACCTGAGACTTTCG-1                    12              4.37322      6677
+## AAACCTGGTCTTCAAG-1                    12              4.76625     12064
+## AAACCTGGTGCAACTT-1                    11             50.77106       843
+## AAACCTGGTGTTGAGG-1                    12              5.24771      8175
+## AAACCTGTCCCAAGTA-1                    13              6.08937      8638
+## ...                                  ...                  ...       ...
+## TTTGGTTTCTTTAGGG-1                    11              6.85010      3489
+## TTTGTCAAGAAACGAG-1                    12              7.01754      7809
+## TTTGTCAAGGACGAAA-1                    12              5.30255      9486
+## TTTGTCACAGGCTCAC-1                    11             18.95093      1182
+## TTTGTCAGTTCGGCAC-1                    12              4.60339     10514
+</pre >
+
+
+## QC metrics distribution
+
+```
+plotColData
+```
+
+```{r eval = FALSE, echo=FALSE, out.width='80%', fig.align='center'}
+p1 <- 
+    
+    tibble(UMI = log10(sce$sum)) %>%  
+        ggplot(aes(x = "Sample", y = UMI)) +
+            geom_violin()
+        scale_y_log10() + 
+        theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+        ggtitle("log10(Total UMI count)") +
+        xlab(NULL)
+p2 <- plotColData(sce, x="Sample", y="detected") + 
+        scale_y_log10() + 
+        theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+        ggtitle("Number of detected genes")
+p3 <- plotColData(sce, x="Sample", y = "subsets_Mito_percent") + 
+        theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+        ggtitle("% Mitochondrial UMI")
+
+p1 + p2 + p3
+ggsave('Images/qc_violins_raw.png',
+       bg='transparent',
+       width = 8,
+       height = 4.1)
+```
+
+```{r echo=FALSE, out.width='90%', fig.align='center'}
+knitr::include_graphics('Images/qc_violins_raw.png')
+```
+
+
+
+
+
