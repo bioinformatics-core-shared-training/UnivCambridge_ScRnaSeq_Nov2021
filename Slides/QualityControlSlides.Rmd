@@ -357,42 +357,131 @@ colData(sce)
 </pre >
 
 
-## QC metrics distribution
+## QC metrics - distribution
 
-```
-plotColData
+```{r eval = FALSE}
+plotColData(sce, x="Sample", y="sum") + scale_y_log10()
+plotColData(sce, x="Sample", y="detected") + scale_y_log10()
+plotColData(sce, x="Sample", y="subsets_Mito_percent")
 ```
 
 ```{r eval = FALSE, echo=FALSE, out.width='80%', fig.align='center'}
-p1 <- 
-    
-    tibble(UMI = log10(sce$sum)) %>%  
-        ggplot(aes(x = "Sample", y = UMI)) +
-            geom_violin()
-        scale_y_log10() + 
+p1 <- plotColData(sce, x="Sample", y="sum") + 
+        scale_y_log10() +
         theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
-        ggtitle("log10(Total UMI count)") +
-        xlab(NULL)
+        labs(x = NULL, y = "sum", title = "log10(Total UMI count)") 
 p2 <- plotColData(sce, x="Sample", y="detected") + 
-        scale_y_log10() + 
+        scale_y_log10() +
         theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
-        ggtitle("Number of detected genes")
-p3 <- plotColData(sce, x="Sample", y = "subsets_Mito_percent") + 
-        theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
-        ggtitle("% Mitochondrial UMI")
+            labs(x = NULL, y = "detected", title = "Number of detected genes")
+p3 <- plotColData(sce, x="Sample", y="subsets_Mito_percent") + 
+    theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+    labs(x = NULL, y = "subsets_Mito_percent", title = "% Mitochondrial UMI")
 
-p1 + p2 + p3
+p1 + p2 + p3 &
+  plot_annotation(theme = theme(plot.background = element_rect(fill = "transparent", 
+                                                               colour = NA)))
+
 ggsave('Images/qc_violins_raw.png',
        bg='transparent',
-       width = 8,
+       width = 7,
        height = 4.1)
 ```
 
-```{r echo=FALSE, out.width='90%', fig.align='center'}
+```{r echo=FALSE, out.width='80%', fig.align='center'}
 knitr::include_graphics('Images/qc_violins_raw.png')
 ```
 
+## QC metrics - relationship
 
+```{r echo = FALSE}
+colData(sce)  %>%  
+    as.data.frame() %>%  
+    arrange(subsets_Mito_percent) %>%  
+    ggplot(aes(x=sum, y=detected)) +
+        geom_point(aes(colour = subsets_Mito_percent > 15)) +
+        scale_x_log10() +
+        scale_y_log10()
+```
 
+## Identification of low-quality cells with adaptive thresholds
+
+```{r eval = FALSE}
+sce$low_lib_size <- isOutlier(sce$sum, log=TRUE, type="lower")
+sce$low_n_features <- isOutlier(sce$detected, log=TRUE, type="lower")
+sce$high_Mito_percent <- isOutlier(sce$subsets_Mito_percent, type="higher") 
+```
+
+```{r eval = FALSE, echo=FALSE}
+p1 <- plotColData(sce, x="Sample",
+                  y="sum", 
+                  colour_by = "low_lib_size") + 
+        scale_y_log10() +
+        theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+        labs(x = NULL, y = "sum", title = "log10(Total UMI count)")  +
+        guides(colour = "none")
+p2 <- plotColData(sce, x="Sample", 
+                  y="detected",
+                  colour_by = "low_n_features") + 
+        scale_y_log10() +
+        theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+        labs(x = NULL, y = "detected", title = "Number of detected genes") +
+        guides(colour = "none")
+p3 <- plotColData(sce, x="Sample", 
+                  y="subsets_Mito_percent", 
+                  colour_by = "high_Mito_percent") + 
+    theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+    labs(x = NULL, y = "subsets_Mito_percent", title = "% Mitochondrial UMI") +    
+        guides(colour = "none")
+
+p1 + p2 + p3 &
+  plot_annotation(theme = theme(plot.background = element_rect(fill = "transparent", 
+                                                               colour = NA)))
+
+ggsave('Images/qc_violins_filtered.png',
+       bg='transparent',
+       width = 7,
+       height = 4.1)
+```
+
+```{r echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics('Images/qc_violins_filtered.png')
+```
+
+## All three filter steps at once
+
+```{r}
+reasons <- quickPerCellQC(colData(sce),
+              percent_subsets=c("subsets_Mito_percent"))
+```
+
+```{r echo = FALSE}
+reasons
+```
+
+## All three filter steps at once
+
+```{r eval = FALSE}
+reasons <- quickPerCellQC(colData(sce),
+              percent_subsets=c("subsets_Mito_percent"))
+```
+
+```{r echo = FALSE, eval = FALSE}
+p1 <- as.data.frame(reasons) %>%
+    dplyr::select(`Library Size`=low_lib_size,
+                  `Genes detected`=low_n_features,
+                  `Mitochondrial UMIs`=high_subsets_Mito_percent) %>%  
+    mutate(across(everything(), as.logical)) %>%  
+    ggvenn::ggvenn(show_percentage = FALSE) +
+    theme(plot.background = element_rect(fill = "transparent", colour = NA))
+ggsave('Images/qc_venn.png',
+       bg='transparent',
+       width = 4.1,
+       height = 4.1)
+```
+
+```{r echo=FALSE, out.width='55%', fig.align='center'}
+knitr::include_graphics('Images/qc_venn.png')
+```
 
 
