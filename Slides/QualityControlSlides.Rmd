@@ -105,6 +105,7 @@ knitr::include_graphics('Images/sce_object_1.png')
 ```{r}
 sample.path <- c(SRR9264343 = "CellRanger_Outputs/SRR9264343/outs/filtered_feature_bc_matrix/")
 sce <- read10xCounts(sample.path, col.names=TRUE)
+sce <- read10xCounts(sample.path, col.names=FALSE)
 ```
 
 ### Loading multiple samples
@@ -217,11 +218,6 @@ ggsave('Images/genes_by_umi.png',
 knitr::include_graphics('Images/genes_by_umi.png')
 ```
 
-```{r echo = FALSE}
-detected_genes <- rowSums(counts(sce)) > 0
-sce <- sce[detected_genes,]
-```
-
 ## Properties of RNAseq data - Distribution of counts for a gene across cells
 
 ```{r, eval = FALSE, include = FALSE}
@@ -256,6 +252,18 @@ knitr::include_graphics('Images/top_expressed_genes.png')
 
 ```{r echo=FALSE, out.width='50%', fig.align='center'}
 knitr::include_graphics('Images/top_expressed_genes_hbb.png')
+```
+
+## Remove undetected genes
+
+Although the count matrix has 36601 genes, many of these will not have been
+detected in any droplet. We can remove these to reduce the size of the count
+matrix.
+
+```{r}
+undetected_genes <- rowSums(counts(sce)) == 0
+sce <- sce[!undetected_genes,]
+sce
 ```
 
 ## Quality Control
@@ -490,11 +498,9 @@ knitr::include_graphics('Images/qc_venn.png')
 ## Filter the Single Cell Object
 
 * Filter cells according to QC metrics.  
-* Additionally, filter out uninformative genes.
 
 ```{r}
-undetectedGenes <- rowSums(counts(sce)) == 0
-sce.Filtered <- sce[!undetectedGenes, !cell_qc_results$discard]
+sce.Filtered <- sce[, !cell_qc_results$discard]
 sce.Filtered
 ```
 
