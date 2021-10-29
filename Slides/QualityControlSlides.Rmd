@@ -2,7 +2,7 @@
 title: Introduction to single-cell RNA-seq analysis
 subtitle: Quality Control
 author: "Ashley Sawle"
-date: '14th October 2021'
+date: '29th October 2021'
 output:
   ioslides_presentation:
     keep_md: true
@@ -295,8 +295,13 @@ saveRDS(sce, "sce_annotated.rds")
 sce <- readRDS("sce_annotated.rds")
 ```
 
-```{r}
+```{r eval = FALSE}
 rowData(sce)
+```
+
+```{r echo = FALSE}
+ord <- rowData(sce)$Chromosome %>% str_replace("MT", "ZZZ") %>% order()
+rowData(sce[ord,])
 ```
 
 ## Quality Control
@@ -328,7 +333,7 @@ colData(sce)
 ```
 
 <pre >## DataFrame with 3094 rows and 8 columns
-##                         Sample            Barcode       <span style="color:black; font-weight: bold">sum  detected</span> subsets_Mito_sum
+##                         Sample            Barcode       <span style="color:darkblue; font-weight: bold">sum  detected</span> subsets_Mito_sum
 ##                    <character>        <character> <numeric> <integer>        <numeric>
 ## AAACCTGAGACTTTCG-1  SRR9264343 AAACCTGAGACTTTCG-1      6677      2056              292
 ## AAACCTGGTCTTCAAG-1  SRR9264343 AAACCTGGTCTTCAAG-1     12064      3177              575
@@ -341,7 +346,7 @@ colData(sce)
 ## TTTGTCAAGGACGAAA-1  SRR9264343 TTTGTCAAGGACGAAA-1      9486      2589              503
 ## TTTGTCACAGGCTCAC-1  SRR9264343 TTTGTCACAGGCTCAC-1      1182       591              224
 ## TTTGTCAGTTCGGCAC-1  SRR9264343 TTTGTCAGTTCGGCAC-1     10514      2831              484
-##                    subsets_Mito_detected <span style="color:black; font-weight: bold">subsets_Mito_percent</span>     total
+##                    subsets_Mito_detected <span style="color:darkblue; font-weight: bold">subsets_Mito_percent</span>     total
 ##                                <integer>            <numeric> <numeric>
 ## AAACCTGAGACTTTCG-1                    12              4.37322      6677
 ## AAACCTGGTCTTCAAG-1                    12              4.76625     12064
@@ -451,23 +456,21 @@ knitr::include_graphics('Images/qc_violins_filtered.png')
 ## All three filter steps at once
 
 ```{r}
-reasons <- quickPerCellQC(colData(sce),
-              percent_subsets=c("subsets_Mito_percent"))
+cell_qc_results <- quickPerCellQC(colData(sce), percent_subsets=c("subsets_Mito_percent"))
 ```
 
 ```{r echo = FALSE}
-reasons
+cell_qc_results 
 ```
 
 ## All three filter steps at once
 
 ```{r eval = FALSE}
-reasons <- quickPerCellQC(colData(sce),
-              percent_subsets=c("subsets_Mito_percent"))
+cell_qc_results <- quickPerCellQC(colData(sce), percent_subsets=c("subsets_Mito_percent"))
 ```
 
 ```{r echo = FALSE, eval = FALSE}
-p1 <- as.data.frame(reasons) %>%
+p1 <- as.data.frame(cell_qc_results) %>%
     dplyr::select(`Library Size`=low_lib_size,
                   `Genes detected`=low_n_features,
                   `Mitochondrial UMIs`=high_subsets_Mito_percent) %>%  
@@ -482,6 +485,17 @@ ggsave('Images/qc_venn.png',
 
 ```{r echo=FALSE, out.width='55%', fig.align='center'}
 knitr::include_graphics('Images/qc_venn.png')
+```
+
+## Filter the Single Cell Object
+
+* Filter cells according to QC metrics.  
+* Additionally, filter out uninformative genes.
+
+```{r}
+undetectedGenes <- rowSums(counts(sce)) == 0
+sce.Filtered <- sce[!undetectedGenes, !cell_qc_results$discard]
+sce.Filtered
 ```
 
 
