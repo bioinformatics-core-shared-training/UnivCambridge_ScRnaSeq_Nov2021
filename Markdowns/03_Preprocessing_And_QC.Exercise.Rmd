@@ -38,9 +38,7 @@ library(patchwork)
 library(ggvenn)
 ```
 
-# Reading CellRanger output into R
-
-## Sample meta data
+# Sample meta data
 
 We will load both the Caron and HCA data sets. We have already prepared a sample
 meta data table that relates the sample/run ID to the sample group.
@@ -53,9 +51,9 @@ samplesheet <- read_tsv("Data/sample_sheet.tsv")
 sample material. Later on, we will combine these to form a single sample, but 
 for now we will need to rename them so that they are QC'd separately.
 
-## Load data
+# Load data
 
-### Parallelisation
+## Parallelisation
 
 We first need to first set up some parallel parameters using the package
 `BiocParallel`.
@@ -179,7 +177,7 @@ colData(sce)
 unique(sce$Sample)
 ```
 
-## Undetected genes
+# Undetected genes
 
 Remove undetected genes.
 
@@ -204,7 +202,7 @@ least one sample.
 
 :::
 
-## Annotate genes
+# Annotate genes
 
 In order to assess the percentage of mitochondrial UMIs, we will need to be
 able to identify mitochondrial genes. The simplest way to do this is to annotate
@@ -227,7 +225,7 @@ rowData(sce)
 ```
 
 
-## Add per cell QC metrics
+# Add per cell QC metrics
 
 Now add the per cell QC metrics to the droplet annotation using the
 function `addPerCellQC`.
@@ -238,7 +236,7 @@ is.mito <- which(rowData(sce)$Chromosome=="MT")
 sce <- addPerCellQC(sce, subsets=list(Mito=is.mito), BPPARAM = bp.params)
 ```
 
-## QC metric distribution
+# Explore QC metric distribution
 
 Before moving on to do the actual cell filtering, it is always a good idea to
 explore the distribution of the metrics across the droplets.
@@ -293,7 +291,7 @@ plotColData(sce, x="Sample", y="subsets_Mito_percent", other_fields="SampleGroup
     ggtitle("Mito percent")
 ```
 
-## Identification of low-quality cells with adaptive thresholds
+# Identification of low-quality cells with adaptive thresholds
 
 :::exercise
 
@@ -383,7 +381,7 @@ plotColData(sce,
     guides(colour=guide_legend(title="Discarded"))
 ```
 
-## Filtering out poor quality cells
+# Filtering out poor quality cells
 
 Filter out the poor quality cells, recalculate the cell QC metrics and save the
 filtered object.
@@ -407,6 +405,8 @@ filter the genes using "sparsity".
 Look at section 8 of the documention. Filter the dataset to remove genes that 
 have only been detected in fewer than 20 cells.
 
+How many additional genes are filtered out?
+
 <details><summary>Answer</summary>
 ```{r qc_addPerFeatureQC, eval=TRUE}
 sce <- addPerFeatureQC(sce, BPPARAM = bp.params)
@@ -414,12 +414,16 @@ rowData(sce)$gene_sparsity <- (100 - rowData(sce)$detected) / 100
 max.sparsity <- 1 - (20 / ncol(sce))
 sparse.genes <- rowData(sce)$gene_sparsity > max.sparsity
 sce <- sce[!sparse.genes, ]
+sum(sparse.genes)
 ```
+
+An additional `r sum(sparse.genes)` have been filtered out.
+
 </details>
 
 :::
 
-## Session information
+# Session information
 
 <details>
 ```{r}
