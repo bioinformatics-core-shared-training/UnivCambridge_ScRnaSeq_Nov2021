@@ -1,5 +1,5 @@
 ---
-title: "CRUK CI Summer School 2020 - introduction to single-cell RNA-seq analysis"
+title: "Introduction to single-cell RNA-seq analysis"
 subtitle: 'Alignment and feature counting with Cell Ranger'
 
 author: "Stephane Ballereau & Ashley Sawle"
@@ -8,7 +8,7 @@ output:
     df_print: paged
     toc: yes
     number_sections: true
-    code_folding: hide
+    css: ../css/boxes.css
 ---
 
 ```{r setup, include = FALSE}
@@ -43,8 +43,8 @@ counting, but will also:
   
 Cell Ranger is computationally very intensive, you will not be able to run it on
 a laptop or standard desktop computer. You will need access to, for example, a
-high power computing cluster, a server or other cloud based computational
-resource with sufficient power - talk to your local IT support.
+high performance computing (HPC) cluster, a server or other cloud-based computational
+resource with sufficient power - talk to your local IT support. 
 
 Alternative methods include:
 
@@ -52,7 +52,7 @@ Alternative methods include:
   this tool is built into the general purpose STAR aligner (Cell Ranger actually
   uses STAR under the hood). This will generate outputs very similar to
   Cell Ranger minus the cloupe file and the QC report. The advantage over
-  Cell Ranger is that it is much less computationally intenstive and will run
+  Cell Ranger is that it is much less computationally intensive and will run
   with lower memory requirements in a shorter time.
 * **[Alevin](https://salmon.readthedocs.io/en/latest/alevin.html)** - This tool
   is based on the popular Salmon tool for bulk RNAseq feature counting. Alevin
@@ -71,13 +71,13 @@ the single cell RNAseq analysis. In this chapter we will be looking at the
 cells. Later in the course you will encounter the `aggr` (aggregate) tool, which
 can be used to merge multiple samples into a single experiment-level data set.
 
-In addition to the analysis tools, Cell Ranger also includes a tools to
+In addition to the analysis tools, Cell Ranger also includes the `mkref` tool to
 generate a custom Cell Ranger reference from genomic and transcriptomic
 references.
 
 <!-- # -->## Installing Cell Ranger
 
-Full installation instruction can be found on the 
+Cell Ranger runs on Linux, and full installation instructions can be found on the 
 [10x website](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/installation).
 
 <!-- # -->## Cell Ranger references
@@ -87,20 +87,88 @@ the genome and transcriptome of interest to be provided in a specific format.
 If you are working with the standard genome/transcriptome of human or mouse
 then you can download prebuilt references from the [10x
 website](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest)
-(there is even a combined genome reference, which is useful for PDX based
-experiments).
+(there is even a combined human-mouse genome reference, which is useful for patient-derived xenograft experiments).
 
 If you require a reference for the genome of another species, or wish to add
 custom transcripts to the gene annotation (e.g. fusion genes), then you will
-need to build your own index using the Cell Ranger `mkref` tool. We will not go
-into detail here about this, but it is a relatively straightforward process and
-you can find comprehensive instructions
-[here](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/references).
+need to build your own index using the Cell Ranger `mkref` tool. 
+In order to prepare our reference for Cell Ranger, we need two files: 
+
+- A reference genome in FASTA format
+- A transcript annotation file in GTF format 
+
+These files can be downloaded from public repositories such as [Ensembl](https://www.ensembl.org) (see [EnsemblGenomes](https://ensemblgenomes.org/) for non-vertebrate genomes).
+As an example for our course, we have downloaded one of the chromosomes from the 
+[human genome page](https://www.ensembl.org/Homo_sapiens/Info/Index).
+In a real-life scenario you would download the full genome, conventionally named `species.version.dna.toplevel.fa.gz` (for example, `Homo_sapiens.GRCh38.dna.toplevel.fa.gz`).
+We have also downloaded the GTF file with transcript annotation for our genome from the same site. 
+
+To index our genome, we can use the `cellranger mkref` tool as (replacing `{...}` with the relevant piece of information): 
+
+```bash
+cellranger mkref \
+  --nthreads={CPUS} \
+  --genome={OUTPUT FOLDER FOR INDEX} \
+  --fasta={GENOME FASTA} \
+  --genes={ANNOTATION GTF}
+```
+
+One thing of note is that `mkref` does not work with files compressed with `gzip` (the format that Ensembl provides them as). 
+Therefore, make sure to decompress the files first (you can do this using the `gunzip file.gz` command).
+
+
+:::exercise 
+
+Open VS Code and create a shell script named `01-prepare_reference.sh` to index the reference genome for Cell Ranger. 
+The output from `mkref` should be named `cellranger_index`. 
+The start of the script is given here, so you can copy/paste this to a new file and work from there. 
+
+```bash
+#!/bin/bash
+
+# change to directory with the FASTA and GTF files
+cd data/reference/
+
+# run mkref
+cellranger mkref FIXME
+```
+
+Run your script from the terminal using `bash` (make sure you're running it from the `~/Course_Materials` directory. 
+
+<details><summary>Answer</summary>
+
+The complete script would be: 
+
+```bash
+#!/bin/bash
+
+# change to directory with the FASTA and GTF files
+cd data/reference/
+
+# run mkref
+cellranger mkref \
+  --nthreads=8 \
+  --genome=cellranger_index \
+  --fasta=Homo_sapiens.GRCh38.dna.chromosome.21.fa \
+  --genes=Homo_sapiens.GRCh38.104.chr21.gtf
+```
+
+If we save this script in our `scripts` folder as `01-prepare_reference.sh`, we could then run it from the terminal with:
+
+```console
+$ bash scripts/01-prepare_reference.sh
+```
+
+</details>
+
+:::
+
 
 <!-- # -->## Cell Ranger `count`
 
-Full details for running the `count` can be found on the 
+Full details for running the `cellranger count` tool can be found on the 
 [10x website](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/count).
+Here, we go through a typical analysis workflow with this tool. 
 
 <!-- # -->### Preparing the raw fastq files
 
@@ -110,7 +178,7 @@ You will need to provide the software with the sample name (e.g. SRR9264343) of 
 to be processed. Cell Ranger expects the file names of the fastq files to follow
 a specific convention so that it can correctly identify the files for the
 specific sample. If the files names of your fastqs do not match this convention
-you will need to modify them.
+you will need to rename them.
 
 The convention is the default convention used by `bcl2fastq` (the tool that
 converts the raw sequencing data in `bcl` format into `fastq` files):
@@ -125,7 +193,7 @@ converts the raw sequencing data in `bcl` format into `fastq` files):
   samples were listed in the sample sheet used when running `bcl2fastq`. This
   is not important for Cell Ranger, other than it indicates the end of the
   Sample Name, you can set all your samples to S1.
-* **\<Lane\>** - The lane number. If your sequencing was run across mutliple
+* **\<Lane\>** - The lane number. If your sequencing was run across multiple
   lanes, then you may have multiple sets of fastqs for a single sample with
   different lane numbers.
 * **\<Read\>** - The read type: **R1** for Read 1, **R2** for Read 2, and index
@@ -164,13 +232,90 @@ advisable to set limits to the resources it will use:
 A complete command for processing on of the Caron samples might be:
 
 ```
-cellranger count --id=SRR9264343 \
-                 --transcriptome=refdata-gex-mm10-2020-A \
-                 --fastqs=fastq \
-                 --sample=SRR9264343 \
-                 --localcores=8 \
-                 --localmem=64
+cellranger count --id={OUTPUT_SAMPLE_NAME} \
+                 --transcriptome={DIRECTORY_WITH_REFERENCE} \
+                 --fastqs={DIRECTORY_WITH_FASTQ_FILES} \
+                 --sample={NAME_OF_SAMPLE_IN_FASTQ_FILES} \
+                 --localcores={NUMBER_OF_CPUS} \
+                 --localmem={RAM_MEMORY}
 ```
+
+:::exercise 
+
+Open VS Code and create a shell script named `02-cellranger.sh` to obtain gene counts per cell for one of our samples. 
+Our FASTQ files are named with the "SRR9264343" prefix, which corresponds to one of the replicates from a "ETV6/RUNX1" cancer subtype. 
+Run `cellranger count` with the output named "ETV6_RUNX1_rep1". 
+
+The start of the script is given here, so you can copy/paste this to a new file and work from there. 
+
+```bash
+#!/bin/bash
+
+# make output directory
+mkdir -p results/cellranger
+
+# change into that directory
+cd results/cellranger
+
+# run cellranger count (maximum CPUs 8; maximum RAM 24GB)
+cellranger count FIXME
+```
+
+<details><summary>Hint</summary>
+
+Here is a bit more detail about writing the `cellranger count` command:
+
+```bash
+cellranger count \
+  --id=FIXME \
+  --transcriptome=../../data/reference/cellranger_index \
+  --fastqs=FIXME \
+  --sample=FIXME \
+  --localcores=8 \
+  --localmem=24
+```
+
+Note that we have to write the paths relative to the results folder we create within the script. 
+See the example below for the `--transcriptome` option and see if you can adapt it also for specifying the path to the FASTQ folder.
+
+</details>
+
+Run your script from the terminal using `bash`. 
+
+<details><summary>Answer</summary>
+
+The complete script would be: 
+
+```bash
+#!/bin/bash
+
+# make output directory
+mkdir -p results/cellranger
+
+# change into that directory
+cd results/cellranger
+
+# run cellranger count (maximum CPUs 8; maximum RAM 24GB)
+cellranger count \
+  --id=ETV6_RUNX1_rep1 \
+  --transcriptome=../../data/reference/cellranger_index \
+  --fastqs=../../data/reads/ \
+  --sample=SRR9264343 \
+  --localcores=8 \
+  --localmem=24
+```
+
+If we save this script in our `scripts` folder as `02-cellranger.sh`, we could then run it from the terminal with:
+
+```console
+$ bash scripts/02-cellranger.sh
+```
+
+</details>
+
+:::
+
+
 
 <!-- # --># Cell Ranger outputs
 
