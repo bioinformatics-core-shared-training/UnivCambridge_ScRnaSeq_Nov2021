@@ -64,41 +64,19 @@ bp.params <- MulticoreParam(workers = 7)
 
 ## Load the data
 
-:::exercise 
+### Exercise 1
+
 In order to load the CellRanger data for all of the Caron samples, you will first
 need to create a named vector of the paths to the filtered count matrix folders 
 called `list_of_files` and then use this in the `read10xCounts` command. 
 
-<details><summary>Hint</summary>
-The paths to `filtered_feature_bc_matrix` directories for each sample can be
-constructed using the **SampleId** as:   
-
-<span style = "color: #545454; font-weight: bold;">CellRanger_Outputs/<span style="color: #2e2892; font-style: italic;">SampleId</span>/outs/filtered_feature_bc_matrix</span>
-
-You will need to use a function such as `str_c` or `paste`
-
-The names of the vector will determine the sample name used in the counts 
-matrix, this should be the 'SRR' number as in the SampleId column of the
-sample sheet.
-</details>
-
-
-<details><summary>Answer</summary>
 ```{r loadData}
-samples_list <- samplesheet %>% 
-    filter(DatasetName=="Caron") %>%  
-    pull(SampleId)
-list_of_files <- str_c("CellRanger_Outputs/", 
-                       samples_list, 
-                       "/outs/filtered_feature_bc_matrix")
-names(list_of_files) <- samples_list
 
-    
-sce <- read10xCounts(list_of_files, col.names=TRUE, BPPARAM = bp.params)
+
+
+
+
 ```
-</details>
-
-:::
 
 ## Check samples in the data set
 
@@ -122,34 +100,11 @@ from one another.
 We will also switch the "Sample" column to be the sample name and add 
 information from the sample sheet to the droplet annotation.
 
-:::exercise
+### Exercise 2
 
 In the code below, replace the "**XXXXXXXX**" to rename the PBMMC_1 samples
 appropriately.
 
-<pre class="r"><code>colData(sce) &lt;- colData(sce) %&gt;% 
-    as.data.frame() %&gt;%
-    rownames_to_column(&quot;RowName&quot;) %&gt;% 
-    mutate(SampleNum = str_extract(RowName, &quot;^[0-9]+&quot;)) %&gt;%
-    mutate(Barcode = str_replace(Barcode, &quot;1$&quot;, SampleNum)) %&gt;%
-    left_join(samplesheet, by=c(Sample=&quot;SampleId&quot;)) %&gt;%
-    rename(SampleId=Sample) %&gt;% 
-    rename(Sample=SampleName) %&gt;%    
-    mutate(Sample = case_when(
-           SampleId == <span style = "font-weight: bold;">XXXXXXXX</span> ~ str_c(Sample, &quot;a&quot;),
-           SampleId == <span style = "font-weight: bold;">XXXXXXXX</span> ~ str_c(Sample, &quot;b&quot;),
-           TRUE ~ Sample)) %&gt;% 
-    column_to_rownames(&quot;RowName&quot;) %&gt;% 
-    select(Sample, Barcode, SampleId, SampleGroup, DatasetName) %&gt;%
-    DataFrame()</code></pre>
-
-<details><summary>Hint</summary>
-The new `SampleId` columns contains the "SRR" numbers, as does the SampleId in
-the sample sheet. Replace the **XXXXXXXXX** with the appropriate "SRR" number
-by checking for the PBMMC_1 samples in the samplesheet.
-</details>
-
-<details><summary>Answer</summary>
 ```{r dataSets_addSampleSheetAnswer}
 colData(sce) <- colData(sce) %>% 
     as.data.frame() %>%
@@ -160,16 +115,13 @@ colData(sce) <- colData(sce) %>%
     rename(SampleId=Sample) %>% 
     rename(Sample=SampleName) %>%    
     mutate(Sample = case_when(
-           SampleId == "SRR9264351" ~ str_c(Sample, "a"),
-           SampleId == "SRR9264352" ~ str_c(Sample, "b"),
+           SampleId == XXXXXXXX ~ str_c(Sample, "a"),
+           SampleId == XXXXXXXX ~ str_c(Sample, "b"),
            TRUE ~ Sample)) %>% 
     column_to_rownames("RowName") %>% 
     select(Sample, Barcode, SampleId, SampleGroup, DatasetName) %>%
     DataFrame()
 ```
-</details>
-
-:::
 
 Before moving on, check that the columns are as we expect them to be and that
 the PBMMC_1 samples have been renamed:
@@ -188,21 +140,13 @@ detected_genes <- rowSums(counts(sce)) > 0
 sce <- sce[detected_genes,]
 ```
 
-:::exercise
+### Exercise 3
 
 What proportion of genes have been detected
 
-<details><summary>Answer</summary>
 ```{r percentageDetected}
-detected <- sum(detected_genes)/length(detected_genes)
-detected
+
 ```
-
-Approximately `r round(detected, 3)*100` percent of genes were detected in at
-least one sample.
-</details>
-
-:::
 
 # Annotate genes
 
@@ -243,59 +187,39 @@ sce <- addPerCellQC(sce, subsets=list(Mito=is.mito), BPPARAM = bp.params)
 Before moving on to do the actual cell filtering, it is always a good idea to
 explore the distribution of the metrics across the droplets.
 
-:::exercise
+### Exercise 4
 Use the `scater` function `plotColData` to generate plots showing the
 distributions of the total number of UMIs, the number of genes detected and
 percentage of UMIs aligned to mitochondrial genes across all cells for each
 sample.
 
-<details><summary>Answer</summary>
-```{r eval = FALSE, fig.width=12, fig.height=4}
-plotColData(sce, x="Sample", y="sum",other_fields="SampleGroup") + 
-    facet_wrap(~SampleGroup, nrow=1, scales = "free_x") + 
-    scale_y_log10() + 
-    ggtitle("Total count")
-```
-
-```{r eval = FALSE, fig.width=12, fig.height=4}
-plotColData(sce, x="Sample", y="detected", other_fields="SampleGroup") + 
-    facet_wrap(~SampleGroup, nrow=1, scales = "free_x") + 
-    scale_y_log10() + 
-    ggtitle("Detected features")
-```
-
-```{r eval = FALSE, fig.width=12, fig.height=4}
-plotColData(sce, x="Sample", y="subsets_Mito_percent", other_fields="SampleGroup") + 
-    facet_wrap(~SampleGroup, nrow=1, scales = "free_x") +
-    ggtitle("Mito percent")
-```
-</details>
-
-:::
-
 ```{r umiDistr, echo = FALSE, fig.width=12, fig.height=4}
-plotColData(sce, x="Sample", y="sum",other_fields="SampleGroup") + 
-    facet_wrap(~SampleGroup, nrow=1, scales = "free_x") + 
-    scale_y_log10() + 
-    ggtitle("Total count")
+
+
+
+
+
 ```
 
 ```{r geneDistr, echo = FALSE, fig.width=12, fig.height=4}
-plotColData(sce, x="Sample", y="detected", other_fields="SampleGroup") + 
-    facet_wrap(~SampleGroup, nrow=1, scales = "free_x") + 
-    scale_y_log10() + 
-    ggtitle("Detected features")
+
+
+
+
+
 ```
 
 ```{r mtDistr, echo = FALSE, fig.width=12, fig.height=4}
-plotColData(sce, x="Sample", y="subsets_Mito_percent", other_fields="SampleGroup") + 
-    facet_wrap(~SampleGroup, nrow=1, scales = "free_x") +
-    ggtitle("Mito percent")
+
+
+
+
+
 ```
 
 # Identification of low-quality cells with adaptive thresholds
 
-:::exercise
+### Exercise 5
 
 Use the scater function `quickPerCellQC` to assess cell quality based
 on the three metrics. Name the object generated `cell_qc_results`.  
@@ -306,35 +230,13 @@ applied.
 
 How many cells will be removed from the data set?
 
-
-<details><summary>Hint</summary>
-With these samples we have three possible "batch" levels at which we could 
-run adaptive filtering. We could apply the filtering across all samples 
-together (i.e. no `batch`), we could apply it by sample group (ETV6-RUNX1, 
-HHD, PBMMC, PRE-T), or we could apply it per sample. 
-</details>
+```{r quickPerCellQC}
 
 
-<details><summary>Answer</summary>
-It is clear that there are significantly different distribution profiles
-between samples in the same group. Noticeably the distribution profiles for the
-two PBMMC_1 samples are quite different - it would appear that PBMMC_1b has a
-lower overal UMI count indicating less sequencing. For this reason it may be
-prudent to apply the adaptive filtering to each sample independently.
 
-```{r quickPerCellQC_batch_compute}
-cell_qc_results <- quickPerCellQC(colData(sce),
-                                percent_subsets=c("subsets_Mito_percent"),
-                                batch=sce$Sample)
-as.data.frame(cell_qc_results) %>% summarise(across(everything(), sum))
+
+
 ```
-
-In total `r sum(cell_qc_results$discad)` cells will be removed from the
-dataset.
-
-</details>
-
-:::
 
 Let's replace the columns in the droplet annotation with these new filters.
 
@@ -388,7 +290,7 @@ plotColData(sce,
 Filter out the poor quality cells, recalculate the cell QC metrics and save the
 filtered object.
 
-```{r eval = FALSE}
+```{r}
 sce <- sce[, !sce$discard]
 colData(sce) <- colData(sce)[,1:3]
 sce <- addPerCellQC(sce, BPPARAM = bp.params)
@@ -397,7 +299,7 @@ saveRDS(sce, "../results/Caron_filtered_genes.rds")
 
 # Filtering genes based on sparsity - Bonus exercise
 
-:::exercise 
+### Exercise 6 
 
 So far we have only eliminated genes that are undetected across all samples. In reality
 there will be a large number of genes that are only detected at low levels in a small
@@ -409,21 +311,13 @@ have only been detected in fewer than 20 cells.
 
 How many additional genes are filtered out?
 
-<details><summary>Answer</summary>
-```{r qc_addPerFeatureQC, eval=TRUE}
-sce <- addPerFeatureQC(sce, BPPARAM = bp.params)
-rowData(sce)$gene_sparsity <- (100 - rowData(sce)$detected) / 100
-max.sparsity <- 1 - (20 / ncol(sce))
-sparse.genes <- rowData(sce)$gene_sparsity > max.sparsity
-sce <- sce[!sparse.genes, ]
-sum(sparse.genes)
+```{r qc_addPerFeatureQC}
+
+
+
+
+
 ```
-
-An additional `r sum(sparse.genes)` have been filtered out.
-
-</details>
-
-:::
 
 # Session information
 
