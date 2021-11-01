@@ -2,7 +2,7 @@
 title: Introduction to single-cell RNA-seq analysis
 subtitle: Quality Control
 author: "Ashley Sawle"
-date: '14th October 2021'
+date: '29th October 2021'
 output:
   ioslides_presentation:
     keep_md: true
@@ -105,6 +105,7 @@ knitr::include_graphics('Images/sce_object_1.png')
 ```{r}
 sample.path <- c(SRR9264343 = "CellRanger_Outputs/SRR9264343/outs/filtered_feature_bc_matrix/")
 sce <- read10xCounts(sample.path, col.names=TRUE)
+sce <- read10xCounts(sample.path, col.names=FALSE)
 ```
 
 ### Loading multiple samples
@@ -217,11 +218,6 @@ ggsave('Images/genes_by_umi.png',
 knitr::include_graphics('Images/genes_by_umi.png')
 ```
 
-```{r echo = FALSE}
-detected_genes <- rowSums(counts(sce)) > 0
-sce <- sce[detected_genes,]
-```
-
 ## Properties of RNAseq data - Distribution of counts for a gene across cells
 
 ```{r, eval = FALSE, include = FALSE}
@@ -256,6 +252,18 @@ knitr::include_graphics('Images/top_expressed_genes.png')
 
 ```{r echo=FALSE, out.width='50%', fig.align='center'}
 knitr::include_graphics('Images/top_expressed_genes_hbb.png')
+```
+
+## Remove undetected genes
+
+Although the count matrix has 36601 genes, many of these will not have been
+detected in any droplet. We can remove these to reduce the size of the count
+matrix.
+
+```{r}
+undetected_genes <- rowSums(counts(sce)) == 0
+sce <- sce[!undetected_genes,]
+sce
 ```
 
 ## Quality Control
@@ -295,8 +303,13 @@ saveRDS(sce, "sce_annotated.rds")
 sce <- readRDS("sce_annotated.rds")
 ```
 
-```{r}
+```{r eval = FALSE}
 rowData(sce)
+```
+
+```{r echo = FALSE}
+ord <- rowData(sce)$Chromosome %>% str_replace("MT", "ZZZ") %>% order()
+rowData(sce[ord,])
 ```
 
 ## Quality Control
@@ -328,7 +341,7 @@ colData(sce)
 ```
 
 <pre >## DataFrame with 3094 rows and 8 columns
-##                         Sample            Barcode       <span style="color:black; font-weight: bold">sum  detected</span> subsets_Mito_sum
+##                         Sample            Barcode       <span style="color:darkblue; font-weight: bold">sum  detected</span> subsets_Mito_sum
 ##                    <character>        <character> <numeric> <integer>        <numeric>
 ## AAACCTGAGACTTTCG-1  SRR9264343 AAACCTGAGACTTTCG-1      6677      2056              292
 ## AAACCTGGTCTTCAAG-1  SRR9264343 AAACCTGGTCTTCAAG-1     12064      3177              575
@@ -341,7 +354,7 @@ colData(sce)
 ## TTTGTCAAGGACGAAA-1  SRR9264343 TTTGTCAAGGACGAAA-1      9486      2589              503
 ## TTTGTCACAGGCTCAC-1  SRR9264343 TTTGTCACAGGCTCAC-1      1182       591              224
 ## TTTGTCAGTTCGGCAC-1  SRR9264343 TTTGTCAGTTCGGCAC-1     10514      2831              484
-##                    subsets_Mito_detected <span style="color:black; font-weight: bold">subsets_Mito_percent</span>     total
+##                    subsets_Mito_detected <span style="color:darkblue; font-weight: bold">subsets_Mito_percent</span>     total
 ##                                <integer>            <numeric> <numeric>
 ## AAACCTGAGACTTTCG-1                    12              4.37322      6677
 ## AAACCTGGTCTTCAAG-1                    12              4.76625     12064
@@ -357,42 +370,138 @@ colData(sce)
 </pre >
 
 
-## QC metrics distribution
+## QC metrics - distribution
 
-```
-plotColData
+```{r eval = FALSE}
+plotColData(sce, x="Sample", y="sum") + scale_y_log10()
+plotColData(sce, x="Sample", y="detected") + scale_y_log10()
+plotColData(sce, x="Sample", y="subsets_Mito_percent")
 ```
 
 ```{r eval = FALSE, echo=FALSE, out.width='80%', fig.align='center'}
-p1 <- 
-    
-    tibble(UMI = log10(sce$sum)) %>%  
-        ggplot(aes(x = "Sample", y = UMI)) +
-            geom_violin()
-        scale_y_log10() + 
+p1 <- plotColData(sce, x="Sample", y="sum") + 
+        scale_y_log10() +
         theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
-        ggtitle("log10(Total UMI count)") +
-        xlab(NULL)
+        labs(x = NULL, y = "sum", title = "log10(Total UMI count)") 
 p2 <- plotColData(sce, x="Sample", y="detected") + 
-        scale_y_log10() + 
+        scale_y_log10() +
         theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
-        ggtitle("Number of detected genes")
-p3 <- plotColData(sce, x="Sample", y = "subsets_Mito_percent") + 
-        theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
-        ggtitle("% Mitochondrial UMI")
+            labs(x = NULL, y = "detected", title = "Number of detected genes")
+p3 <- plotColData(sce, x="Sample", y="subsets_Mito_percent") + 
+    theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+    labs(x = NULL, y = "subsets_Mito_percent", title = "% Mitochondrial UMI")
 
-p1 + p2 + p3
+p1 + p2 + p3 &
+  plot_annotation(theme = theme(plot.background = element_rect(fill = "transparent", 
+                                                               colour = NA)))
+
 ggsave('Images/qc_violins_raw.png',
        bg='transparent',
-       width = 8,
+       width = 7,
        height = 4.1)
 ```
 
-```{r echo=FALSE, out.width='90%', fig.align='center'}
+```{r echo=FALSE, out.width='80%', fig.align='center'}
 knitr::include_graphics('Images/qc_violins_raw.png')
 ```
 
+## QC metrics - relationship
 
+```{r echo = FALSE}
+colData(sce)  %>%  
+    as.data.frame() %>%  
+    arrange(subsets_Mito_percent) %>%  
+    ggplot(aes(x=sum, y=detected)) +
+        geom_point(aes(colour = subsets_Mito_percent > 15)) +
+        scale_x_log10() +
+        scale_y_log10()
+```
 
+## Identification of low-quality cells with adaptive thresholds
+
+```{r eval = FALSE}
+sce$low_lib_size <- isOutlier(sce$sum, log=TRUE, type="lower")
+sce$low_n_features <- isOutlier(sce$detected, log=TRUE, type="lower")
+sce$high_Mito_percent <- isOutlier(sce$subsets_Mito_percent, type="higher") 
+```
+
+```{r eval = FALSE, echo=FALSE}
+p1 <- plotColData(sce, x="Sample",
+                  y="sum", 
+                  colour_by = "low_lib_size") + 
+        scale_y_log10() +
+        theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+        labs(x = NULL, y = "sum", title = "log10(Total UMI count)")  +
+        guides(colour = "none")
+p2 <- plotColData(sce, x="Sample", 
+                  y="detected",
+                  colour_by = "low_n_features") + 
+        scale_y_log10() +
+        theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+        labs(x = NULL, y = "detected", title = "Number of detected genes") +
+        guides(colour = "none")
+p3 <- plotColData(sce, x="Sample", 
+                  y="subsets_Mito_percent", 
+                  colour_by = "high_Mito_percent") + 
+    theme(plot.background = element_rect(fill = "transparent", colour = NA)) +
+    labs(x = NULL, y = "subsets_Mito_percent", title = "% Mitochondrial UMI") +    
+        guides(colour = "none")
+
+p1 + p2 + p3 &
+  plot_annotation(theme = theme(plot.background = element_rect(fill = "transparent", 
+                                                               colour = NA)))
+
+ggsave('Images/qc_violins_filtered.png',
+       bg='transparent',
+       width = 7,
+       height = 4.1)
+```
+
+```{r echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics('Images/qc_violins_filtered.png')
+```
+
+## All three filter steps at once
+
+```{r}
+cell_qc_results <- quickPerCellQC(colData(sce), percent_subsets=c("subsets_Mito_percent"))
+```
+
+```{r echo = FALSE}
+cell_qc_results 
+```
+
+## All three filter steps at once
+
+```{r eval = FALSE}
+cell_qc_results <- quickPerCellQC(colData(sce), percent_subsets=c("subsets_Mito_percent"))
+```
+
+```{r echo = FALSE, eval = FALSE}
+p1 <- as.data.frame(cell_qc_results) %>%
+    dplyr::select(`Library Size`=low_lib_size,
+                  `Genes detected`=low_n_features,
+                  `Mitochondrial UMIs`=high_subsets_Mito_percent) %>%  
+    mutate(across(everything(), as.logical)) %>%  
+    ggvenn::ggvenn(show_percentage = FALSE) +
+    theme(plot.background = element_rect(fill = "transparent", colour = NA))
+ggsave('Images/qc_venn.png',
+       bg='transparent',
+       width = 4.1,
+       height = 4.1)
+```
+
+```{r echo=FALSE, out.width='55%', fig.align='center'}
+knitr::include_graphics('Images/qc_venn.png')
+```
+
+## Filter the Single Cell Object
+
+* Filter cells according to QC metrics.  
+
+```{r}
+sce.Filtered <- sce[, !cell_qc_results$discard]
+sce.Filtered
+```
 
 
