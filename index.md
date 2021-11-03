@@ -67,13 +67,13 @@ Two data sets:
     + [Slides](Slides/01_introduction.pdf)
 * 10:25 - 10:30 5 min **break** 
 * 10:30 - 10:40 **Preamble**: data set and workflow - Stephane Ballereau
-    + [Slides](Slides/02_Preamble.html)
+    + [Slides](Slides/02_PreambleSlides.html)
 * 10:40 - 12:30 Library structure, **cellranger** for alignment and cell calling, preprocessing - Stephane Ballereau
     + [Slides](Slides/03_CellRangerSlides.html) <!-- \([pdf](scRNAseq/Slides/CellRangerSlides.pdf)\) -->
     + [Alignment with Cell Ranger](Markdowns/03_CellRanger.html)
 * 12:30 - 13:30 **lunch break**
 * 13:30 - 17:30 **QC and exploratory analysis** - Ashley Sawle
-    + [Slides](Slides/QualityControlSlides.html) \([pdf](Slides/QualityControlSlides.pdf)\)
+    + [Slides](Slides/04_QualityControlSlides.html) \([pdf](Slides/04_QualityControlSlides.pdf)\)
     + [QC and preprocessing](Markdowns/04_Preprocessing_And_QC.html)     
     <!-- + [Exercise Solutions](Markdowns/04_Preprocessing_And_QC.Exercise.html) -->
 
