@@ -31,6 +31,8 @@ Please bear with us if there are any technical hitches, and be aware that timing
 for different sections laid out in the schedule below may not be adhered to.
 There may be some necessity to make adjusments to the course as we go.
 
+(Materials linked to below will be updated closer to the time of delivery)
+
 > ## Prerequisites
 >
 > __**Some basic experience of using a UNIX/LINUX command line is assumed**__
