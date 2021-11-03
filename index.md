@@ -12,6 +12,7 @@
 * Hugo Tavares - Bioinformatics Training Facility, University of Cambridge
 * Katarzyna Kania - Genomics Core, Cancer Research UK Cambridge Institute
 * Stephane Ballereau - Bioinformatics Core, Cancer Research UK Cambridge Institute
+<<<<<<< HEAD
 
 ## Outline
 
