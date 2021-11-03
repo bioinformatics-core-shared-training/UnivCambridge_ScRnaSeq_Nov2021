@@ -64,13 +64,13 @@ Two data sets:
 
 * 09:30 - 09:40 **Welcome** <!-- Paul -->
 * 09:40 - 10:25 **Introduction** - Katarzyna Kania
-    + [Slides](Slides/Introduction_to_Single_Cell_RNAseq_CRUK_Kania_23rd_July_2021.pdf)
+    + [Slides](Slides/01_introduction.pdf)
 * 10:25 - 10:30 5 min **break** 
 * 10:30 - 10:40 **Preamble**: data set and workflow - Stephane Ballereau
-    + [Slides](Slides/dataSetSlides.html)
+    + [Slides](Slides/02_Preamble.html)
 * 10:40 - 12:30 Library structure, **cellranger** for alignment and cell calling, preprocessing - Stephane Ballereau
-    + [Slides](Slides/CellRangerSlides.html) <!-- \([pdf](scRNAseq/Slides/CellRangerSlides.pdf)\) -->
-    + [Alignment with Cell Ranger](Markdowns/cellRanger.html)
+    + [Slides](Slides/03_CellRangerSlides.html) <!-- \([pdf](scRNAseq/Slides/CellRangerSlides.pdf)\) -->
+    + [Alignment with Cell Ranger](Markdowns/03_CellRanger.html)
 * 12:30 - 13:30 **lunch break**
 * 13:30 - 17:30 **QC and exploratory analysis** - Ashley Sawle
     + [Slides](Slides/QualityControlSlides.html) \([pdf](Slides/QualityControlSlides.pdf)\)
