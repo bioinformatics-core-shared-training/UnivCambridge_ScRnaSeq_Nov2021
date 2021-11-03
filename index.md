@@ -94,7 +94,7 @@ The various analysis steps are bundled into a bookdown.
 * 13:30 - 17:30 QC and exploratory analysis - Ashley Sawle
     + [Slides](Slides/QualityControlSlides.html) \([pdf](Slides/QualityControlSlides.pdf)\)
     + [QC and preprocessing](Markdowns/04_Preprocessing_And_QC.html)     
-    <!-- + [Exercise Solutions](Markdowns/04_Preprocessing_And_QC.Exercise.html) -->
+    <!-- + [Exercise](Markdowns/04_Preprocessing_And_QC.Exercise.html) -->
 
 ### Day 2: Thursday 11th Nov
 
