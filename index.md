@@ -96,7 +96,7 @@ The various analysis steps are bundled into a bookdown.
 * 13:30 - 17:30 QC and exploratory analysis - Ashley Sawle
     + [Slides](Slides/QualityControlSlides.html) \([pdf](Slides/QualityControlSlides.pdf)\)
     + [QC and preprocessing](Markdowns/04_Preprocessing_And_QC.html)     
-    <!-- + [Exercise Solutions](Markdowns/04_Preprocessing_And_QC.Exercise.html) -->
+<!-- + [Exercise Solutions](Markdowns/04_Preprocessing_And_QC.Exercise.html) -->
 
 ### Day 2: Thursday 11th Nov
 
@@ -104,19 +104,19 @@ The various analysis steps are bundled into a bookdown.
 * 09:40 - 12:30 Normalisation - Stephane Ballereau
     + [Slides](Slides/normalisationSlides.html) <!-- \([pdf](scRNAseq/Slides/normalisationSlides.pdf)\) -->
     + [Practical](Markdowns/normalisation_5hCellPerSpl_caron.html)     
-    <!-- + [Exercise Solutions](Markdowns/normalisation_exercise_solutions.html) -->
+<!-- + [Exercise Solutions](Markdowns/normalisation_exercise_solutions.html) -->
 
 * 12:30 - 13:30 lunch break
 
 * 13:30 - 15:25 Feature selection and dimensionality reduction - Hugo Tavares
     + [Slides](Slides/FeatureSelectionAndDimensionalityReductionSlides.html)
     + [Dimensionality reduction, feature selection](Markdowns/dimRedFeatSel_2021.html)
-    <!-- + [Exercise Solutions](CourseMaterials/Challenges/DimRedChallengeSolutions.html) -->
+<!-- + [Exercise Solutions](CourseMaterials/Exercises/DimRedChallengeSolutions.html) -->
 * 15:25 - 15:35 10 min break 
 * 15:35 - 17:30 Batch correction and data set integration - Abigail Edwards
     + [Slides](Slides/DataIntegrationAndBatchCorrectionSlides.html)  
     + [Data set integration](Markdowns/dataSetIntegration_PBMMC_ETV6-RUNX1.html)
-    <!-- extended ? -->
+<!-- extended ? -->
 
 ### Day 3: Thursday 18th Nov
 
@@ -129,21 +129,21 @@ The various analysis steps are bundled into a bookdown.
 * 11:15 - 12:30 Identification of cluster marker genes - Hugo Tavares
     + [Slides](Slides/MarkerIdentificationSlides.html)
     + [Cluster marker genes](Markdowns/ClusterMarkerGenes2021.html)
-    <!-- + [Exercise Solutions](scRNAseq/CourseMaterials/Challenges/ClusterMarkerGenes2021.Exercise.Solutions.html) -->
+<!-- + [Exercise Solutions](scRNAseq/CourseMaterials/Exercises/ClusterMarkerGenes2021.Exercise.Solutions.html) -->
 
 * 12:30 - 13:30 lunch break
 
-* 13:30 - 15:25 Differential expression between conditions <!-- Stephane -->
-    + [Slides](scRNAseq/Slides/multiSplCompSlides.html)
-    + [Practical](scRNAseq/Markdowns/multiSplComp.html)     
-    <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/multiSplComp_exercise1_solutions.html) -->
-    <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/multiSplComp_exercise2_solutions.html) -->
+* 13:30 - 15:25 Differential expression between conditions - Stephane Ballereau
+    + [Slides](Slides/multiSplCompSlides.html)
+    + [Practical](Markdowns/multiSplComp.html)     
+<!-- + [Exercise1 Solutions](scRNAseq/Markdowns/multiSplComp_exercise1_solutions.html) -->
+<!-- + [Exercise2 Solutions](scRNAseq/Markdowns/multiSplComp_exercise2_solutions.html) -->
 * 15:25 - 15:35 10 min break 
-* 15:35 - 17:30 Differential abundance between conditions <!-- Stephane -->
-    + [Slides](scRNAseq/Slides/multiSplCompSlides.html)
-    + [Practical](scRNAseq/Markdowns/multiSplComp.html)     
-    <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/multiSplComp_exercise1_solutions.html) -->
-    <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/multiSplComp_exercise2_solutions.html) -->
+* 15:35 - 17:30 Differential abundance between conditions - Stephane Ballereau
+    + [Slides](Slides/multiSplCompSlides.html)
+    + [Practical](Markdowns/multiSplComp.html)     
+<!-- + [Exercise1 Solutions](scRNAseq/Markdowns/multiSplComp_exercise1_solutions.html) -->
+<!-- + [Exercise2 Solutions](scRNAseq/Markdowns/multiSplComp_exercise2_solutions.html) -->
 
 <!--
 git checkout gh-pages
