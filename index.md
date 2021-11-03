@@ -58,21 +58,21 @@ Two data sets:
 
 **Tentative schedule** for a 3-day course.
 
+(long sessions include breaks)
+
 ### Day 1: Thursday 4th Nov
 
-* 09:30 - 09:40 Welcome <!-- Paul -->
-* 09:40 - 10:25 Introduction - Katarzyna Kania
+* 09:30 - 09:40 **Welcome** <!-- Paul -->
+* 09:40 - 10:25 **Introduction** - Katarzyna Kania
     + [Slides](Slides/Introduction_to_Single_Cell_RNAseq_CRUK_Kania_23rd_July_2021.pdf)
-* 10:25 - 10:30 5 min break 
-* 10:30 - 10:40 Preamble: data set and workflow - Stephane Ballereau
+* 10:25 - 10:30 5 min **break** 
+* 10:30 - 10:40 **Preamble**: data set and workflow - Stephane Ballereau
     + [Slides](Slides/dataSetSlides.html)
-* 10:40 - 12:30 Library structure, cellranger for alignment and cell calling, preprocessing - Stephane Ballereau
+* 10:40 - 12:30 Library structure, **cellranger** for alignment and cell calling, preprocessing - Stephane Ballereau
     + [Slides](Slides/CellRangerSlides.html) <!-- \([pdf](scRNAseq/Slides/CellRangerSlides.pdf)\) -->
     + [Alignment with Cell Ranger](Markdowns/cellRanger.html)
-
-* 12:30 - 13:30 lunch break
-
-* 13:30 - 17:30 QC and exploratory analysis - Ashley Sawle
+* 12:30 - 13:30 **lunch break**
+* 13:30 - 17:30 **QC and exploratory analysis** - Ashley Sawle
     + [Slides](Slides/QualityControlSlides.html) \([pdf](Slides/QualityControlSlides.pdf)\)
     + [QC and preprocessing](Markdowns/04_Preprocessing_And_QC.html)     
     <!-- + [Exercise Solutions](Markdowns/04_Preprocessing_And_QC.Exercise.html) -->
@@ -80,19 +80,17 @@ Two data sets:
 ### Day 2: Thursday 11th Nov
 
 * 09:30 - 09:40 Recap <!-- Stephane -->
-* 09:40 - 12:30 Normalisation - Stephane Ballereau
+* 09:40 - 12:30 **Normalisation** - Stephane Ballereau
     + [Slides](Slides/normalisationSlides.html) <!-- \([pdf](scRNAseq/Slides/normalisationSlides.pdf)\) -->
     + [Practical](Markdowns/normalisation_5hCellPerSpl_caron.html)     
     <!-- + [Exercise Solutions](Markdowns/normalisation_exercise_solutions.html) -->
-
-* 12:30 - 13:30 lunch break
-
+* 12:30 - 13:30 **lunch break**
 * 13:30 - 15:25 Feature selection and dimensionality reduction - Hugo Tavares
     + [Slides](Slides/FeatureSelectionAndDimensionalityReductionSlides.html)
     + [Dimensionality reduction, feature selection](Markdowns/dimRedFeatSel_2021.html)
 <!-- + [Exercise Solutions](CourseMaterials/Exercises/DimRedChallengeSolutions.html) -->
-* 15:25 - 15:35 10 min break 
-* 15:35 - 17:30 Batch correction and data set integration - Abigail Edwards
+* 15:25 - 15:35 10 min **break**
+* 15:35 - 17:30 **Batch correction and data set integration** - Abigail Edwards
     + [Slides](Slides/DataIntegrationAndBatchCorrectionSlides.html)  
     + [Data set integration](Markdowns/dataSetIntegration_PBMMC_ETV6-RUNX1.html)
     <!-- extended ? -->
@@ -100,25 +98,23 @@ Two data sets:
 ### Day 3: Thursday 18th Nov
 
 * 09:30 - 09:40 Recap <!-- Stephane -->
-* 09:40 - 11:05 Clustering - Stephane Ballereau
+* 09:40 - 11:05 **Clustering** - Stephane Ballereau
     + [Slides](Slides/clusteringSlides.html)
     + [Practical](Markdowns/clusteringPostDsi.html)     
     <!-- + [Exercise Solutions](scRNAseq/Markdowns/clusteringPostDsi_exercise_solution.html) -->
-* 11:05 - 11:15 10 min break 
-* 11:15 - 12:30 Identification of cluster marker genes - Hugo Tavares
+* 11:05 - 11:15 10 min **break** 
+* 11:15 - 12:30 **Identification of cluster marker genes** - Hugo Tavares
     + [Slides](Slides/MarkerIdentificationSlides.html)
     + [Cluster marker genes](Markdowns/ClusterMarkerGenes2021.html)
     <!-- + [Exercise Solutions](scRNAseq/CourseMaterials/Exercises/ClusterMarkerGenes2021.Exercise.Solutions.html) -->
-
-* 12:30 - 13:30 lunch break
-
-* 13:30 - 15:25 Differential expression between conditions - Stephane Ballereau
+* 12:30 - 13:30 **lunch break**
+* 13:30 - 15:25 **Differential expression between conditions** - Stephane Ballereau
     + [Slides](Slides/multiSplCompSlides.html)
     + [Practical](Markdowns/multiSplComp.html)     
     <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/multiSplComp_exercise1_solutions.html) -->
     <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/multiSplComp_exercise2_solutions.html) -->
-* 15:25 - 15:35 10 min break 
-* 15:35 - 17:30 Differential abundance between conditions - Stephane Ballereau
+* 15:25 - 15:35 10 min **break** 
+* 15:35 - 17:30 **Differential abundance between conditions** - Stephane Ballereau
     + [Slides](Slides/multiSplCompSlides.html)
     + [Practical](Markdowns/multiSplComp.html)     
     <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/multiSplComp_exercise1_solutions.html) -->
