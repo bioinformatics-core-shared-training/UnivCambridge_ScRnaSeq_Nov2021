@@ -3,7 +3,7 @@
 #### Taught remotely
 #### Bioinformatics Training, Craik-Marshall Building, Downing Site, University of Cambridge
 
-![](Images/CRUK_CC_whiteBgd.jpg)
+![](Images/uniOfCamCrukLogos.png)
 
 ## Instructors
 
