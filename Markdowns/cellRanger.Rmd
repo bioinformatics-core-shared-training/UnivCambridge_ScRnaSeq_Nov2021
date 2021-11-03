@@ -127,7 +127,7 @@ The start of the script is given here, so you can copy/paste this to a new file 
 #!/bin/bash
 
 # change to directory with the FASTA and GTF files
-cd data/reference/
+cd Data/reference/
 
 # run mkref
 cellranger mkref FIXME
@@ -143,7 +143,7 @@ The complete script would be:
 #!/bin/bash
 
 # change to directory with the FASTA and GTF files
-cd data/reference/
+cd Data/reference/
 
 # run mkref
 cellranger mkref \
@@ -268,7 +268,7 @@ Here is a bit more detail about writing the `cellranger count` command:
 ```bash
 cellranger count \
   --id=FIXME \
-  --transcriptome=../../data/reference/cellranger_index \
+  --transcriptome=../../Data/reference/cellranger_index \
   --fastqs=FIXME \
   --sample=FIXME \
   --localcores=8 \
@@ -298,8 +298,8 @@ cd results/cellranger
 # run cellranger count (maximum CPUs 8; maximum RAM 24GB)
 cellranger count \
   --id=ETV6_RUNX1_rep1 \
-  --transcriptome=../../data/reference/cellranger_index \
-  --fastqs=../../data/reads/ \
+  --transcriptome=../../Data/reference/cellranger_index \
+  --fastqs=../../Data/reads/ \
   --sample=SRR9264343 \
   --localcores=8 \
   --localmem=24
