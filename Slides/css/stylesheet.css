@@ -1,11 +1,11 @@
 .gdbar img {
-  width: 450px !important;
+  width: 950px !important;
   height: 100px !important;
   margin: 8px 8px;
 }
 
 .gdbar {
-  width: 500px !important;
+  width: 1000px !important;
   height: 120px !important;
 }
 
@@ -14,9 +14,9 @@ slides > slide.title-slide hgroup h1 {
 }
 
 slides > slide:not(.nobackground):before {
-  width: 135px;
+  width: 300px;
   height: 30px;
-  background-size: 135px 30px;
+  background-size: 300px 30px;
 }
 
 slides > slide hgroup h2 {
@@ -29,7 +29,7 @@ p {
 }
 
 ul li {
-    color: #ed008c;
+    color: #2E008B;
     list-style-type: square;
 }
 

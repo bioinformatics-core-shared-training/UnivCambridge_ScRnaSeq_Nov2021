@@ -1,10 +1,10 @@
 ---
 title: "Introduction to single-cell RNA-seq analysis - Data sets and analyses"
 author: "Stephane Ballereau"
-date: "July 2021"
+date: "Nov 2021"
 output:
   ioslides_presentation:
-    logo: ../Images/CRUK_CC_greyBgd.jpg
+    logo: ../Images/uniOfCamCrukLogos.png
     smaller: yes
     widescreen: yes
     css: css/stylesheet.css
@@ -12,28 +12,28 @@ output:
   beamer_presentation: default
 ---
     
-<!--
-    logo: Images/CRUK_CC_web.jpg
--->
+## Data sets
 
-## Data set
+* Childhood acute lymphoblastic leukemia (cALL)
+  * [Caron et al. 2020](https://www.nature.com/articles/s41598-020-64929-x)
+  * the most common pediatric cancer
+  * characterized by bone marrow lymphoid precursors
+  * that acquire genetic alterations,
+  * resulting in disrupted maturation and uncontrollable proliferation 
+  * up to 85–90% of patients are cured
+  * others do not respond to treatment or relapse and die
+  * **Aim**: characterise the heterogeneity of gene expression at the cell level, within and between patients
+  * **cells**: Bone Marrow Mononuclear cells (BMMCs)
 
-Childhood acute lymphoblastic leukemia (cALL)
+* Adult bone marrow
 
-* [Caron et al. 2020](https://www.nature.com/articles/s41598-020-64929-x)
-* the most common pediatric cancer
-* characterized by bone marrow lymphoid precursors
-* that acquire genetic alterations,
-* resulting in disrupted maturation and uncontrollable proliferation 
-* up to 85–90% of patients are cured
-* others do not respond to treatment or relapse and die
-
-Aim: characterise the heterogeneity of gene expression at the cell level, within and between patients
+  * ['HCA': adult BMMCs](https://data.humancellatlas.org/explore/projects/cc95ff89-2e68-4a08-a234-480eca21ce79) (ABMMCs) obtained from the Human Cell Atlas (HCA)
 
 ## Samples
 
-Four type of samples are considered:
+Four types of sample are considered:
 
+<!--
 * eight patients:
   * six B-ALL
     * four 't(12;21)' or 'ETV6-RUNX1'
@@ -41,6 +41,15 @@ Four type of samples are considered:
   * two T-ALL ('PRE-T')
 * three healthy pediatric controls
 * eight healthy adult controls, publicly available
+-->
+
+* B-ALL patients:
+  * four 't(12;21)' or **'ETV6-RUNX1'**
+  * two 'High hyper diploid' or **'HHD'**
+* T-ALL patients
+  * two **'PRE-T'**
+* three **healthy pediatric controls**
+* eight **healthy adult controls**, publicly available
 
 As the study aims at identifying cell populations, large numbers of cells were sequenced with the droplet-based 10X Chromium assay.
 
@@ -52,10 +61,16 @@ We will follow several steps:
 * alignment of reads to the human genome (GRCh38) with 10X software cellranger
 * quality control (cell calls, cells and genes filtering)
 * UMI count normalisation
-* data set integration (PBMMC and ETV6-RUNX1)
 * feature selection and dimensionality reduction
+* data set integration (PBMMC and ETV6-RUNX1)
 * clustering
-* marker gene identification
+* identification of cluster marker gene
 * differential expression and abundance between conditions
-* trajectory analysis
+* (trajectory analysis)
+
+## Workflow
+
+```{r echo=FALSE, out.width='60%', fig.align='center'}
+knitr::include_graphics('Images/workflow2.png')
+```
 
