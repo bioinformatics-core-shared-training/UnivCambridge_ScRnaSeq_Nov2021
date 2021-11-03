@@ -12,7 +12,6 @@
 * Hugo Tavares - Bioinformatics Training Facility, University of Cambridge
 * Katarzyna Kania - Genomics Core, Cancer Research UK Cambridge Institute
 * Stephane Ballereau - Bioinformatics Core, Cancer Research UK Cambridge Institute
-<<<<<<< HEAD
 
 ## Outline
 
@@ -52,27 +51,6 @@ Two data sets:
   * three tumour types: ETV6-RUNX1, HHD, PRE-T  
 * ['HCA': adult BMMCs](https://data.humancellatlas.org/explore/projects/cc95ff89-2e68-4a08-a234-480eca21ce79) (ABMMCs) obtained from the Human Cell Atlas (HCA)
   * (here downsampled from 25000 to 5000 cells per sample)
-
-<!-- 
-## Bookdown
-
-The various analysis steps are bundled into a bookdown.
-
-> **To open the bookdown (please mind: work in progress):**
-> 
-> The bookdown is in:
-> 
-> * PATH_TO_BOOKDONW
->
-> To open the bookdown:
-> 
-> * [Bookdown index](PATH_TO_BOOKDONW/index.html)
-> 
-> OR
-> 
-> * clone the repository
-> * open PATH_TO_BOOKDONW/index.html
--->
 
 ## Tentative schedule
 
@@ -143,11 +121,3 @@ The various analysis steps are bundled into a bookdown.
     + [Practical](scRNAseq/Markdowns/multiSplComp.html)     
     <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/multiSplComp_exercise1_solutions.html) -->
     <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/multiSplComp_exercise2_solutions.html) -->
-
-<!--
-git checkout gh-pages
- # Adding files ...
-git commit -m "Add files"
-git push origin gh-pages
-git checkout master
--->
