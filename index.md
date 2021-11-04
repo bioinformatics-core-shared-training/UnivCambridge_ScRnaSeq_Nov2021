@@ -82,7 +82,7 @@ Two data sets:
 * 13:30 - 17:30 **QC and exploratory analysis** - Ashley Sawle
     + [Slides](Slides/04_QualityControlSlides.html) \([pdf](Slides/04_QualityControlSlides.pdf)\)
     + [QC and preprocessing](Markdowns/04_Preprocessing_And_QC.html)     
-    + [Exercise](Markdowns/04_Preprocessing_And_QC.Exercise.html)
+  <!--  + [Exercise](Markdowns/04_Preprocessing_And_QC.Exercise.html) -->
 
 ### Day 2: Thursday 11th Nov
 
