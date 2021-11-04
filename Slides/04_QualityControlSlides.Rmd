@@ -30,7 +30,7 @@ options(max.print = 2000)
 ## Single Cell RNAseq Analysis Workflow
 
 ```{r echo=FALSE, out.width='60%', fig.align='center'}
-knitr::include_graphics('Images/workflow2.png')
+knitr::include_graphics('Images/workflow2_QC.png')
 ```
 
 ## Quality Control
