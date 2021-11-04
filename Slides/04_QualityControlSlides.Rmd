@@ -37,10 +37,9 @@ knitr::include_graphics('Images/workflow2_QC.png')
 
 <div style="width: 55%; float: left;">
 
-We will now check the distribution of key quality metrics.
+We will now:
 
-We will then:
-
+* Check the distribution of key quality metrics.
 * Filter out genes that are not expressed in any cell
 * Identify low-quality cells
 * Filter and/or mark low quality cells
@@ -51,10 +50,9 @@ We will then:
 
 <div style="width: 55%; float: left;">
 
-We will now check the distribution of key quality metrics.
+We will now:
 
-We will then:
-
+* Check the distribution of key quality metrics.
 * Filter out genes that are not expressed in any cell
 * Identify low-quality cells
 * Filter and/or mark low quality cells
@@ -97,7 +95,6 @@ knitr::include_graphics('Images/sce_object_1.png')
 ```{r}
 sample.path <- c(SRR9264343 = "CellRanger_Outputs/SRR9264343/outs/filtered_feature_bc_matrix/")
 sce <- read10xCounts(sample.path, col.names=TRUE)
-sce <- read10xCounts(sample.path, col.names=FALSE)
 ```
 
 ### Loading multiple samples
