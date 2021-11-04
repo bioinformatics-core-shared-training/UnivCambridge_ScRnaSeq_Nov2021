@@ -51,20 +51,20 @@ Four types of sample are considered:
 * three **healthy pediatric controls**
 * eight **healthy adult controls**, publicly available
 
-As the study aims at identifying cell populations, large numbers of cells were sequenced with the droplet-based 10X Chromium assay.
+As the study aims at identifying cell populations, large numbers of cells were sequenced with the droplet-based 10x Chromium assay.
 
 ## Analyses
 
 We will follow several steps:
 
 * sequencing quality check
-* alignment of reads to the human genome (GRCh38) with 10X software cellranger
+* alignment of reads to the human genome (GRCh38) with 10x software cellranger
 * quality control (cell calls, cells and genes filtering)
 * UMI count normalisation
 * feature selection and dimensionality reduction
 * data set integration (PBMMC and ETV6-RUNX1)
 * clustering
-* identification of cluster marker gene
+* identification of cluster marker genes
 * differential expression and abundance between conditions
 * (trajectory analysis)
 

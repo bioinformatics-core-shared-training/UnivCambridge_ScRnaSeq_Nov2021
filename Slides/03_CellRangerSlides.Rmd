@@ -31,10 +31,6 @@ for each "read".
 knitr::include_graphics('Images/tenxLibStructureV3.png')
 ```
 
-```{r echo=FALSE, out.width='60%', fig.align='center'}
-knitr::include_graphics('Images/tenxLibStructureV3dual.png')
-```
-
 ## Raw fastq files
 
 The sequences for any given fragment will generally be delivered in 3 or 4
@@ -44,6 +40,10 @@ files:
 * **I2**: I5 sample index if present (dual indexing only)
 * **R1**: 10x barcode + UMI
 * **R2**: insert sequence
+
+```{r echo=FALSE, out.width='60%', fig.align='center'}
+knitr::include_graphics('Images/tenxLibStructureV3dual.png')
+```
 
 ## QC of Raw Reads - FASTQC
 
