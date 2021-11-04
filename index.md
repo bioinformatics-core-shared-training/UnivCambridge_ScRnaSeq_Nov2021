@@ -71,7 +71,7 @@ Two data sets:
 
 * 09:30 - 09:40 **Welcome** <!-- Paul -->
 * 09:40 - 10:25 **Introduction** - Katarzyna Kania
-    + [Slides](Slides/01_introduction.pdf)
+    + [Slides](Slides/01_Introduction.pdf)
 * 10:25 - 10:30 5 min **break** 
 * 10:30 - 10:40 **Preamble**: data set and workflow - Stephane Ballereau
     + [Slides](Slides/02_PreambleSlides.html)
