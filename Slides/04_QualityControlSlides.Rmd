@@ -37,15 +37,11 @@ knitr::include_graphics('Images/workflow2_QC.png')
 
 <div style="width: 55%; float: left;">
 
-We will now check the quality of the data further:
-
-* Mapping quality
-* Cell counts
-* Distribution of keys quality metrics
+We will now check the distribution of key quality metrics.
 
 We will then:
 
-* Filter genes with very low expression
+* Filter out genes that are not expressed in any cell
 * Identify low-quality cells
 * Filter and/or mark low quality cells
     
@@ -55,15 +51,11 @@ We will then:
 
 <div style="width: 55%; float: left;">
 
-We will now check the quality of the data further:
-
-* Mapping quality
-* Cell counts
-* Distribution of keys quality metrics
+We will now check the distribution of key quality metrics.
 
 We will then:
 
-* Filter genes with very low expression
+* Filter out genes that are not expressed in any cell
 * Identify low-quality cells
 * Filter and/or mark low quality cells
     
