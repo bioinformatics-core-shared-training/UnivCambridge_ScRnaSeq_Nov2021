@@ -1,20 +1,20 @@
 ---
 title: "Alignment and feature counting"
-author: "Ashley Sawle"
-date: 'July 2021'
+author: "Ashley Sawle, Stephane Ballereau"
+date: 'Nov 2021'
 output:
   ioslides_presentation:
     widescreen: true
     smaller: true
-    logo: Images/crukcc-transparent-small.png
+    logo: Images/uniOfCamCrukLogos.png
     css: css/stylesheet.css
 ---
 
 
 ## Single Cell RNAseq Analysis Workflow
 
-```{r echo=FALSE, out.width='80%', fig.align='center'}
-knitr::include_graphics('Images/workflow.svg')
+```{r echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics('Images/workflow2.png')
 ```
 
 ## 10x library file structure
@@ -45,12 +45,22 @@ files:
 * **R1**: 10x barcode + UMI
 * **R2**: insert sequence
 
-## QC of Raw Reads
+## QC of Raw Reads - FASTQC
 
-* FASTQC:
+```{r echo=FALSE, out.width='60%', fig.align='center'}
+knitr::include_graphics('Images/fastqcTop.png')
+```
 
-```{r echo=FALSE, out.width='20%', fig.align='center'}
-knitr::include_graphics('Images/FastQC_logo.png')
+## QC of Raw Reads - MultiQC - General Statistics
+
+```{r echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics('Images/multiqc1.png')
+```
+
+## QC of Raw Reads - MultiQC - Sequence Quality Histograms 
+
+```{r echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics('Images/multiqc2.png')
 ```
 
 ## Alignment and counting
@@ -197,6 +207,6 @@ knitr::include_graphics('Images/BarcodeRankPlot.png')
 
 ## Single Cell RNAseq Analysis Workflow
 
-```{r echo=FALSE, out.width='80%', fig.align='center'}
-knitr::include_graphics('Images/workflow.svg')
+```{r echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics('Images/workflow2.png')
 ```

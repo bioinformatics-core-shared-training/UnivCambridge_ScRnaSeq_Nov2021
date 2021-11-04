@@ -173,7 +173,7 @@ Here, we go through a typical analysis workflow with this tool.
 <!-- # -->### Preparing the raw fastq files
 
 To run Cell Ranger `count` the fastq files for samples to be processed should be
-placed in a single directory. Cell Ranger will be run separately on each sample
+placed in a single directory. Cell Ranger will be run separately on each sample.
 You will need to provide the software with the sample name (e.g. SRR9264343) of the sample
 to be processed. Cell Ranger expects the file names of the fastq files to follow
 a specific convention so that it can correctly identify the files for the
@@ -370,7 +370,7 @@ by Cell Ranger.
 
 The Cell Ranger summary report - `web_summary.html` - is a very useful first 
 port of call for assessing the quality of the data. An example is linked
-[here](web_summary.html).
+[here](web_summary.html) (See also [here](https://content.cruk.cam.ac.uk/bioinformatics/CourseData/UnivCamScRnaSeqNov2021)).
 
 The first tab, **Summary**, contains various QC metrics about sequencing quality, mapping
 quality and cell calling. The second tab, **Analysis**, provides some basic
@@ -427,7 +427,7 @@ data for droplets that Cell Ranger has determined to contain cells. It performs
 this filtering in two steps.
 
 1. UMI threshold based filtering:  
-  By default, Cell Ranger expects there to 3000 cells (you can change this in
+  By default, Cell Ranger expects 3000 cells (you can change this in
   the arguments of the Cell Ranger command). Cell Ranger takes the top 3000
   droplets by UMI counts. It then takes the UMI count at the 99th percentile of
   this set of cells. It then divides this number of UMIs by 10 to determine a
