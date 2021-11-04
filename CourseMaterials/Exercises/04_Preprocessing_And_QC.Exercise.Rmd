@@ -295,7 +295,7 @@ filtered object.
 sce <- sce[, !sce$discard]
 colData(sce) <- colData(sce)[,1:3]
 sce <- addPerCellQC(sce, BPPARAM = bp.params)
-saveRDS(sce, "../results/Caron_filtered_genes.rds")
+saveRDS(sce, "results/Caron_filtered_genes.rds")
 ```
 
 # Filtering genes based on sparsity - Bonus exercise
