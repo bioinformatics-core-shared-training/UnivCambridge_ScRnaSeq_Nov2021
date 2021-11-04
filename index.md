@@ -13,6 +13,13 @@
 * Katarzyna Kania - Genomics Core, Cancer Research UK Cambridge Institute
 * Stephane Ballereau - Bioinformatics Core, Cancer Research UK Cambridge Institute
 
+**Helpers:**
+
+* Chandra Chilamakuri - Bioinformatics Core, Cancer Research UK Cambridge Institute
+* Jon Price - The Gurdon Institute, University of Cambridge
+* Karsten Bach - Department of Pharmacology, University of Cambridge
+* Chloe Pacyna - Wellcome Sanger Institute
+
 ## Outline
 
 This workshop is aimed at biologists interested in learning how to perform
