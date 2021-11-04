@@ -9,7 +9,7 @@ output:
     widescreen: true
     smaller: true
     logo: Images/crukcc-transparent-small.png
-    css: css/stylesheet.css
+    css: ../css/stylesheet.css
 ---
 
 <style type="text/css">
@@ -29,8 +29,8 @@ options(max.print = 2000)
 
 ## Single Cell RNAseq Analysis Workflow
 
-```{r echo=FALSE, out.width='80%', fig.align='center'}
-knitr::include_graphics('Images/workflow_QC.svg')
+```{r echo=FALSE, out.width='60%', fig.align='center'}
+knitr::include_graphics('Images/workflow2.png')
 ```
 
 ## Quality Control
@@ -114,7 +114,7 @@ sce <- read10xCounts(sample.path, col.names=FALSE)
 list_of_files <- c(SRR9264343 = "CellRanger_Outputs/SRR9264343/outs/filtered_feature_bc_matrix",
                    SRR9264344 = "CellRanger_Outputs/SRR9264344/outs/filtered_feature_bc_matrix",
                    SRR9264347 = "CellRanger_Outputs/SRR9264347/outs/filtered_feature_bc_matrix")
-sce <- read10xCounts(sample.path, col.names=TRUE)
+sce <- read10xCounts(list_of_files, col.names=TRUE)
 ```
 
 #### $\rightarrow$ _SingleCellExperiment_ object
