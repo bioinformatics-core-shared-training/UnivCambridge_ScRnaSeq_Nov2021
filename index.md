@@ -16,9 +16,9 @@
 **Helpers:**
 
 * Chandra Chilamakuri - Bioinformatics Core, Cancer Research UK Cambridge Institute
+* Chloe Pacyna - Wellcome Sanger Institute
 * Jon Price - The Gurdon Institute, University of Cambridge
 * Karsten Bach - Department of Pharmacology, University of Cambridge
-* Chloe Pacyna - Wellcome Sanger Institute
 
 ## Outline
 
