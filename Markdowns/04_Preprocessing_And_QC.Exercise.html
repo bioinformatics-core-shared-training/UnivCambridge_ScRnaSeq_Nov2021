@@ -190,11 +190,12 @@ pre code {
 <li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
 <li><a href="#load-packages"><span class="toc-section-number">2</span> Load packages</a></li>
 <li><a href="#sample-meta-data"><span class="toc-section-number">3</span> Sample meta data</a></li>
-<li><a href="#load-data"><span class="toc-section-number">4</span> Load data</a>
+<li><a href="#read-cellranger-outputs-into-r"><span class="toc-section-number">4</span> Read CellRanger outputs into R</a>
 <ul>
 <li><a href="#parallelisation"><span class="toc-section-number">4.1</span> Parallelisation</a></li>
-<li><a href="#check-samples-in-the-data-set"><span class="toc-section-number">4.2</span> Check samples in the data set</a></li>
-<li><a href="#modify-the-droplet-annotation"><span class="toc-section-number">4.3</span> Modify the droplet annotation</a></li>
+<li><a href="#load-the-data"><span class="toc-section-number">4.2</span> Load the data</a></li>
+<li><a href="#check-samples-in-the-data-set"><span class="toc-section-number">4.3</span> Check samples in the data set</a></li>
+<li><a href="#modify-the-droplet-annotation"><span class="toc-section-number">4.4</span> Modify the droplet annotation</a></li>
 </ul></li>
 <li><a href="#undetected-genes"><span class="toc-section-number">5</span> Undetected genes</a></li>
 <li><a href="#annotate-genes"><span class="toc-section-number">6</span> Annotate genes</a></li>
@@ -228,12 +229,15 @@ library(ggvenn)</code></pre>
 <pre class="r"><code>samplesheet &lt;- read_tsv(&quot;Data/sample_sheet.tsv&quot;)</code></pre>
 <p><strong>NOTE</strong>: There are two PBMMC_1 samples. These are two libraries from the same sample material. Later on, we will combine these to form a single sample, but for now we will need to rename them so that they are QC’d separately.</p>
 </div>
-<div id="load-data" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Load data</h1>
+<div id="read-cellranger-outputs-into-r" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Read CellRanger outputs into R</h1>
 <div id="parallelisation" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Parallelisation</h2>
 <p>We first need to first set up some parallel parameters using the package <code>BiocParallel</code>.</p>
 <pre class="r"><code>bp.params &lt;- MulticoreParam(workers = 7)</code></pre>
+</div>
+<div id="load-the-data" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Load the data</h2>
 <div class="exercise">
 <p>In order to load the CellRanger data for all of the Caron samples, you will first need to create a named vector of the paths to the filtered count matrix folders called <code>list_of_files</code> and then use this in the <code>read10xCounts</code> command.</p>
 <details>
@@ -262,8 +266,8 @@ sce &lt;- read10xCounts(list_of_files, col.names=TRUE, BPPARAM = bp.params)</cod
 </details>
 </div>
 </div>
-<div id="check-samples-in-the-data-set" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Check samples in the data set</h2>
+<div id="check-samples-in-the-data-set" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Check samples in the data set</h2>
 <p>A good sanity check is to look at the colData to ensure that we have all the samples we are expecting and check the overall size of the new object.</p>
 <pre class="r"><code>colData(sce) %&gt;%
     as.data.frame() %&gt;% 
@@ -288,8 +292,8 @@ sce &lt;- read10xCounts(list_of_files, col.names=TRUE, BPPARAM = bp.params)</cod
 ## mainExpName: NULL
 ## altExpNames(0):</code></pre>
 </div>
-<div id="modify-the-droplet-annotation" class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Modify the droplet annotation</h2>
+<div id="modify-the-droplet-annotation" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Modify the droplet annotation</h2>
 <p>We need to modify the cell barcodes so that they unique for each sample. We should also modify the names of the two PBMMC_1 samples, so that we can distinguish them from one another.</p>
 <p>We will also switch the “Sample” column to be the sample name and add information from the sample sheet to the droplet annotation.</p>
 <div class="exercise">
@@ -529,8 +533,8 @@ max.sparsity &lt;- 1 - (20 / ncol(sce))
 sparse.genes &lt;- rowData(sce)$gene_sparsity &gt; max.sparsity
 sce &lt;- sce[!sparse.genes, ]
 sum(sparse.genes)</code></pre>
-<pre><code>## [1] 8268</code></pre>
-<p>An additional 8268 have been filtered out.</p>
+<pre><code>## [1] 8410</code></pre>
+<p>An additional 8410 have been filtered out.</p>
 </details>
 </div>
 </div>
@@ -538,7 +542,7 @@ sum(sparse.genes)</code></pre>
 <h1><span class="header-section-number">12</span> Session information</h1>
 <details>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.1.1 (2021-08-10)
+<pre><code>## R version 4.1.2 (2021-11-01)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 18.04.6 LTS
 ## 
@@ -556,63 +560,62 @@ sum(sparse.genes)</code></pre>
 ##  [1] grid      parallel  stats4    stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] ggvenn_0.1.9                patchwork_1.1.1             forcats_0.5.1              
-##  [4] stringr_1.4.0               dplyr_1.0.7                 purrr_0.3.4                
-##  [7] readr_2.0.1                 tidyr_1.1.3                 tibble_3.1.4               
-## [10] tidyverse_1.3.1             BiocParallel_1.26.2         AnnotationHub_3.0.1        
-## [13] BiocFileCache_2.0.0         dbplyr_2.1.1                ensembldb_2.16.4           
-## [16] AnnotationFilter_1.16.0     GenomicFeatures_1.44.2      AnnotationDbi_1.54.1       
-## [19] scater_1.20.1               ggplot2_3.3.5               scuttle_1.2.1              
-## [22] DropletUtils_1.12.2         SingleCellExperiment_1.14.1 SummarizedExperiment_1.22.0
-## [25] Biobase_2.52.0              GenomicRanges_1.44.0        GenomeInfoDb_1.28.2        
-## [28] IRanges_2.26.0              S4Vectors_0.30.0            BiocGenerics_0.38.0        
-## [31] MatrixGenerics_1.4.3        matrixStats_0.60.1          rmarkdown_2.10             
+##  [1] rmarkdown_2.10              ggvenn_0.1.9                patchwork_1.1.1            
+##  [4] forcats_0.5.1               stringr_1.4.0               dplyr_1.0.7                
+##  [7] purrr_0.3.4                 readr_2.0.1                 tidyr_1.1.3                
+## [10] tibble_3.1.4                tidyverse_1.3.1             BiocParallel_1.26.2        
+## [13] AnnotationHub_3.0.1         BiocFileCache_2.0.0         dbplyr_2.1.1               
+## [16] ensembldb_2.16.4            AnnotationFilter_1.16.0     GenomicFeatures_1.44.2     
+## [19] AnnotationDbi_1.54.1        scater_1.20.1               ggplot2_3.3.5              
+## [22] scuttle_1.2.1               DropletUtils_1.12.2         SingleCellExperiment_1.14.1
+## [25] SummarizedExperiment_1.22.0 Biobase_2.52.0              GenomicRanges_1.44.0       
+## [28] GenomeInfoDb_1.28.2         IRanges_2.26.0              S4Vectors_0.30.0           
+## [31] BiocGenerics_0.38.0         MatrixGenerics_1.4.3        matrixStats_0.60.1         
 ## [34] nvimcom_0.9-82             
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] readxl_1.3.1                  backports_1.2.1               lazyeval_0.2.2               
-##   [4] crosstalk_1.1.1               digest_0.6.27                 htmltools_0.5.2              
-##   [7] viridis_0.6.1                 fansi_0.5.0                   magrittr_2.0.1               
-##  [10] memoise_2.0.0                 ScaledMatrix_1.0.0            tzdb_0.1.2                   
-##  [13] limma_3.48.3                  Biostrings_2.60.2             modelr_0.1.8                 
-##  [16] vroom_1.5.4                   R.utils_2.10.1                prettyunits_1.1.1            
-##  [19] colorspace_2.0-2              rvest_1.0.1                   blob_1.2.2                   
-##  [22] rappdirs_0.3.3                haven_2.4.3                   xfun_0.25                    
-##  [25] crayon_1.4.1                  RCurl_1.98-1.4                jsonlite_1.7.2               
-##  [28] glue_1.4.2                    gtable_0.3.0                  zlibbioc_1.38.0              
-##  [31] XVector_0.32.0                DelayedArray_0.18.0           BiocSingular_1.8.1           
-##  [34] Rhdf5lib_1.14.2               HDF5Array_1.20.0              scales_1.1.1                 
-##  [37] DBI_1.1.1                     edgeR_3.34.0                  Rcpp_1.0.7                   
-##  [40] viridisLite_0.4.0             xtable_1.8-4                  progress_1.2.2               
-##  [43] dqrng_0.3.0                   bit_4.0.4                     rsvd_1.0.5                   
-##  [46] DT_0.18                       htmlwidgets_1.5.3             httr_1.4.2                   
-##  [49] ellipsis_0.3.2                farver_2.1.0                  pkgconfig_2.0.3              
-##  [52] XML_3.99-0.7                  R.methodsS3_1.8.1             sass_0.4.0                   
-##  [55] locfit_1.5-9.4                utf8_1.2.2                    labeling_0.4.2               
-##  [58] tidyselect_1.1.1              rlang_0.4.11                  later_1.3.0                  
-##  [61] cellranger_1.1.0              munsell_0.5.0                 BiocVersion_3.13.1           
-##  [64] tools_4.1.1                   cachem_1.0.6                  cli_3.0.1                    
-##  [67] generics_0.1.0                RSQLite_2.2.8                 broom_0.7.9                  
-##  [70] evaluate_0.14                 fastmap_1.1.0                 yaml_2.2.1                   
-##  [73] fs_1.5.0                      knitr_1.33                    bit64_4.0.5                  
-##  [76] KEGGREST_1.32.0               sparseMatrixStats_1.4.2       mime_0.11                    
-##  [79] R.oo_1.24.0                   xml2_1.3.2                    biomaRt_2.48.3               
-##  [82] rstudioapi_0.13               compiler_4.1.1                beeswarm_0.4.0               
-##  [85] filelock_1.0.2                curl_4.3.2                    png_0.1-7                    
-##  [88] interactiveDisplayBase_1.30.0 reprex_2.0.1                  bslib_0.2.5.1                
-##  [91] stringi_1.7.4                 highr_0.9                     lattice_0.20-45              
-##  [94] ProtGenerics_1.24.0           Matrix_1.3-4                  vctrs_0.3.8                  
-##  [97] pillar_1.6.2                  lifecycle_1.0.0               rhdf5filters_1.4.0           
-## [100] BiocManager_1.30.16           jquerylib_0.1.4               BiocNeighbors_1.10.0         
-## [103] cowplot_1.1.1                 bitops_1.0-7                  irlba_2.3.3                  
-## [106] httpuv_1.6.2                  rtracklayer_1.52.1            R6_2.5.1                     
-## [109] BiocIO_1.2.0                  promises_1.2.0.1              gridExtra_2.3                
-## [112] vipor_0.4.5                   codetools_0.2-18              assertthat_0.2.1             
-## [115] rhdf5_2.36.0                  rjson_0.2.20                  withr_2.4.2                  
-## [118] GenomicAlignments_1.28.0      Rsamtools_2.8.0               GenomeInfoDbData_1.2.6       
-## [121] hms_1.1.0                     beachmat_2.8.1                DelayedMatrixStats_1.14.3    
-## [124] Cairo_1.5-12.2                lubridate_1.7.10              shiny_1.6.0                  
-## [127] ggbeeswarm_0.6.0              restfulr_0.0.13</code></pre>
+##   [4] digest_0.6.27                 htmltools_0.5.2               viridis_0.6.1                
+##   [7] fansi_0.5.0                   magrittr_2.0.1                memoise_2.0.0                
+##  [10] ScaledMatrix_1.0.0            tzdb_0.1.2                    limma_3.48.3                 
+##  [13] Biostrings_2.60.2             modelr_0.1.8                  vroom_1.5.4                  
+##  [16] R.utils_2.10.1                prettyunits_1.1.1             colorspace_2.0-2             
+##  [19] rvest_1.0.1                   blob_1.2.2                    rappdirs_0.3.3               
+##  [22] haven_2.4.3                   xfun_0.25                     crayon_1.4.1                 
+##  [25] RCurl_1.98-1.4                jsonlite_1.7.2                glue_1.4.2                   
+##  [28] gtable_0.3.0                  zlibbioc_1.38.0               XVector_0.32.0               
+##  [31] DelayedArray_0.18.0           BiocSingular_1.8.1            Rhdf5lib_1.14.2              
+##  [34] HDF5Array_1.20.0              scales_1.1.1                  DBI_1.1.1                    
+##  [37] edgeR_3.34.0                  Rcpp_1.0.7                    viridisLite_0.4.0            
+##  [40] xtable_1.8-4                  progress_1.2.2                dqrng_0.3.0                  
+##  [43] bit_4.0.4                     rsvd_1.0.5                    httr_1.4.2                   
+##  [46] ellipsis_0.3.2                farver_2.1.0                  pkgconfig_2.0.3              
+##  [49] XML_3.99-0.7                  R.methodsS3_1.8.1             sass_0.4.0                   
+##  [52] locfit_1.5-9.4                utf8_1.2.2                    labeling_0.4.2               
+##  [55] tidyselect_1.1.1              rlang_0.4.11                  later_1.3.0                  
+##  [58] cellranger_1.1.0              munsell_0.5.0                 BiocVersion_3.13.1           
+##  [61] tools_4.1.2                   cachem_1.0.6                  cli_3.0.1                    
+##  [64] generics_0.1.0                RSQLite_2.2.8                 broom_0.7.9                  
+##  [67] evaluate_0.14                 fastmap_1.1.0                 yaml_2.2.1                   
+##  [70] fs_1.5.0                      knitr_1.33                    bit64_4.0.5                  
+##  [73] KEGGREST_1.32.0               sparseMatrixStats_1.4.2       mime_0.11                    
+##  [76] R.oo_1.24.0                   xml2_1.3.2                    biomaRt_2.48.3               
+##  [79] compiler_4.1.2                rstudioapi_0.13               beeswarm_0.4.0               
+##  [82] filelock_1.0.2                curl_4.3.2                    png_0.1-7                    
+##  [85] interactiveDisplayBase_1.30.0 reprex_2.0.1                  bslib_0.2.5.1                
+##  [88] stringi_1.7.4                 highr_0.9                     lattice_0.20-45              
+##  [91] ProtGenerics_1.24.0           Matrix_1.3-4                  vctrs_0.3.8                  
+##  [94] pillar_1.6.2                  lifecycle_1.0.0               rhdf5filters_1.4.0           
+##  [97] BiocManager_1.30.16           jquerylib_0.1.4               BiocNeighbors_1.10.0         
+## [100] cowplot_1.1.1                 bitops_1.0-7                  irlba_2.3.3                  
+## [103] httpuv_1.6.2                  rtracklayer_1.52.1            R6_2.5.1                     
+## [106] BiocIO_1.2.0                  promises_1.2.0.1              gridExtra_2.3                
+## [109] vipor_0.4.5                   codetools_0.2-18              assertthat_0.2.1             
+## [112] rhdf5_2.36.0                  rjson_0.2.20                  withr_2.4.2                  
+## [115] GenomicAlignments_1.28.0      Rsamtools_2.8.0               GenomeInfoDbData_1.2.6       
+## [118] hms_1.1.0                     beachmat_2.8.1                DelayedMatrixStats_1.14.3    
+## [121] Cairo_1.5-12.2                shiny_1.6.0                   lubridate_1.7.10             
+## [124] ggbeeswarm_0.6.0              restfulr_0.0.13</code></pre>
 </details>
 </div>
 

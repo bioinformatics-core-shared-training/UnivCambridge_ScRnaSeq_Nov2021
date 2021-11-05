@@ -395,6 +395,12 @@ sce <- addPerCellQC(sce, BPPARAM = bp.params)
 saveRDS(sce, "../results/Caron_filtered_genes.rds")
 ```
 
+```{r echo = FALSE}
+sce <- sce[, !sce$discard]
+colData(sce) <- colData(sce)[,1:3]
+sce <- addPerCellQC(sce, BPPARAM = bp.params)
+```
+
 # Filtering genes based on sparsity - Bonus exercise
 
 :::exercise 
