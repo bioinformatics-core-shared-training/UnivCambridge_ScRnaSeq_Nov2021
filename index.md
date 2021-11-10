@@ -88,8 +88,8 @@ Two data sets:
 
 * 09:30 - 09:40 Recap <!-- Stephane -->
 * 09:40 - 12:30 **Normalisation** - Stephane Ballereau
-    + [Slides](Slides/normalisationSlides.html) <!-- \([pdf](scRNAseq/Slides/normalisationSlides.pdf)\) -->
-    + [Practical](Markdowns/normalisation_5hCellPerSpl_caron.html)     
+    + [Slides](Slides/05_normalisationSlides.html) <!-- \([pdf](scRNAseq/Slides/05_normalisationSlides.pdf)\) -->
+    + [Practical](Markdowns/05_normalisation.html)     
     <!-- + [Exercise Solutions](Markdowns/normalisation_exercise_solutions.html) -->
 * 12:30 - 13:30 **lunch break**
 * 13:30 - 15:25 Feature selection and dimensionality reduction - Hugo Tavares
