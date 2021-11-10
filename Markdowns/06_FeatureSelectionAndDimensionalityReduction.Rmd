@@ -1,0 +1,846 @@
+---
+title: "Introduction to single-cell RNA-seq analysis"
+author: "Stephane Ballereau, Zeynep Kalender Atak, Hugo Tavares"
+date: "Nov 2021"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: 3
+    number_sections: true
+    css: ../css/boxes.css
+subtitle: Feature Selection and Dimensionality Reduction
+---
+
+```{r setup, echo=FALSE, include=FALSE, message=FALSE, purl=FALSE}
+knitr::opts_knit$set(root.dir = here::here("CourseMaterials"))
+knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, cache=TRUE)
+# knitr::opts_chunk$set(fig.width=7, fig.height=7)
+# knitr::opts_chunk$set(dev="CairoPNG")
+set.seed(123)
+```
+
+# Introduction
+
+In this section we are going to cover the basics of dimensionality reduction methods to represent our multi-dimensional data (with thousands of cells and thousands of genes) in a reduced set of dimensions for visualisation and more efficient downstream analysis. 
+Before we dive into these methods, we will see how to select genes with biologically meaningful signal, to avoid complicating our analysis with potentially "noisy" data. 
+
+
+# Setup
+
+Before we start, let's load our packages and read our data in. 
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+# load packages ----
+library(scater) 
+library(scran)
+library(PCAtools)
+library(tidyverse) # always load tidyverse after other packages
+```
+
+We will load the _SingleCellExperiment_ object generated in the [Normalisation](normalisation_5hCellPerSpl_caron.html) section, which contains normalised counts for 500 cells per sample.  
+
+```{r, cache=FALSE}
+# read data ----
+sce <- readRDS("Robjects/caron_postDeconv_5hCellPerSpl.Rds")
+sce
+```
+
+To make some of our plots later on easier to interpret, we will replace the rownames of the object (containing Ensembl gene IDs) with the common gene names. 
+Sometimes it happens that there is no common gene name, or different genes have the same common name. 
+In both cases, we should instead keep the Ensembl ID, to guarantee unique gene names in our object. 
+A safe way to do this, is to use the `uniquifyFeatureNames()` function:
+
+```{r}
+# use common gene names instead of Ensembl gene IDs
+rownames(sce) <- uniquifyFeatureNames(rownames(sce), rowData(sce)$Symbol)
+```
+
+
+# Feature Selection
+
+We often use scRNA-seq data in exploratory analyses to characterize heterogeneity across cells. Procedures like clustering and dimensionality reduction compare cells based on their gene expression profiles, which involves aggregating per-gene differences into a single (dis)similarity metric between every pair of cells. The choice of genes to use in this calculation has a major impact on the behavior of the metric and the performance of downstream methods. We want to select genes that contain useful information about the biology of the system while removing genes that contain random noise. This aims to preserve interesting biological structure without the variance that obscures that structure, and to reduce the size of the data to improve computational efficiency of later steps.
+
+The simplest approach to feature selection is to select the most variable genes based on their expression across the population. This assumes that genuine biological differences will manifest as increased variation in the affected genes, compared to other genes that are only affected by technical noise or a baseline level of “uninteresting” biological variation (e.g., from transcriptional bursting). Several methods are available to quantify the variation per gene and to select an appropriate set of highly variable genes (HVGs). 
+
+
+## Quantifying per-gene variation
+
+Some assays allow the inclusion of known molecules in a known amount covering a wide range, from low to high abundance: spike-ins. The technical noise is assessed based on the amount of spike-ins used, the corresponding read counts obtained and their variation across cells. The variance in expression can then be decomposed into the biological and technical components.
+
+UMI-based assays do not (yet?) allow spike-ins. But one can still identify highly variable genes (HVGs), which likely capture biological variation. Assuming that, for most genes, the observed variance across cells is due to technical noise, we can assess technical variation by fitting a trend line between the mean-variance relationship across all genes. Genes that substantially deviate from this trend may then be considered as highly-variable, i.e. capturing biologically interesting variation. 
+
+```{r}
+# Mean-variance model ----
+
+# fit the model; the output is a DataFrame object
+gene_var <- modelGeneVar(sce)
+
+# plot the variance against mean of expression with fitted trend line
+gene_var %>% 
+  # convert to tibble for ggplot
+  as_tibble() %>% 
+  # make the plot
+  ggplot(aes(mean, total)) +
+  geom_point() +
+  geom_line(aes(y = tech), colour = "dodgerblue", size = 1) +
+  labs(x = "Mean of log-expression", y = "Variance of log-expression")
+```
+
+
+## Selecting highly variable genes 
+
+Once we have quantified the per-gene variation, the next step is to select the subset of HVGs to use in downstream analyses. A larger subset will reduce the risk of discarding interesting biological signal by retaining more potentially relevant genes, at the cost of increasing noise from irrelevant genes that might obscure said signal. It is difficult to determine the optimal trade-off for any given application as noise in one context may be useful signal in another. Commonly applied strategies are: 
+
+* take top X genes with largest (biological) variation
+
+Top 1000 genes: `getTopHVGs(gene_var, n=1000)` 
+
+Top 10% genes: `getTopHVGs(gene_var, prop=0.1)`
+
+* based on significance 
+
+`getTopHVGs(gene_var, fdr.threshold = 0.05)`
+
+* keeping all genes above the trend 
+
+`getTopHVGs(gene_var, var.threshold = 0)`
+
+* selecting a priori genes of interest 
+
+In our example, we will define ‘HVGs’ as the top 10% of genes with the highest biological component. This is a fairly arbitrary choice. A common practice is to pick an arbitrary threshold (either based on number of proportion) and proceed with the rest of the analysis, with the intention of testing other choices later, rather than spending much time worrying about obtaining the “optimal” value.
+
+```{r}
+# identify the top 10% most variable genes
+hvgs <- getTopHVGs(gene_var, prop=0.1)
+length(hvgs) # check how many genes we have
+hvgs[1:10] # check the first 10 of those genes
+```
+
+The result is a vector of gene IDs ordered by their biological variance (i.e. highest deviation from the trend line shown above). 
+We can use this with functions that accept a list of genes as option to restrict their analysis to that subset of genes (e.g. when we do PCA later on). 
+
+For example, we may want to visualise the expression of the top most-variable genes determined in this way. 
+We can do this with a violin plot for each gene, using the `plotExpression()` function:
+
+```{r plot_count_HVGtop20}
+# visualise expression of top HGVs
+# point_alpha adds transparency to the points
+# jitter option determines the way in which the points are "jittered"
+# try running this with and without those options to see the difference
+plotExpression(sce, features = hvgs[1:20], point_alpha = 0.05, jitter = "jitter")
+```
+
+
+# Dimensionality Reduction 
+
+Many scRNA-seq analysis procedures involve comparing cells based on their expression values across thousands of genes. 
+Thus, each individual gene represents a dimension of the data (and the total number of genes represents the "dimensionality" of the data). 
+More intuitively, if we had a scRNA-seq data set with only two genes, we could visualise our data in a two-dimensional scatterplot, with each axis representing the expression of a gene and each point in the plot representing a cell. 
+Intuitively, we can imagine the same for 3 genes, represented as a 3D plot. 
+Although it becomes harder to imagine, this concept can be extended to data sets with thousands of genes (dimensions), where each cell’s expression profile defines its location in the high-dimensional expression space.
+
+As the name suggests, dimensionality reduction aims to reduce the number of separate dimensions in the data. This is possible because different genes are correlated if they are affected by the same biological process. Thus, we do not need to store separate information for individual genes, but can instead compress multiple features into a single dimension, e.g., an “eigengene” (Langfelder and Horvath 2007). This reduces computational work in downstream analyses like clustering, as calculations only need to be performed for a few dimensions, rather than thousands. It also reduces noise by averaging across multiple genes to obtain a more precise representation of the patterns in the data. And finally it enables effective visualisation of the data, for those of us who are not capable of visualizing more than 2 or 3 dimensions.
+
+Here, we will cover three methods that are most commonly used in scRNA-seq analysis:
+
+- Principal Components Analysis (PCA)
+- t-Distributed Stochastic Neighbor Embedding (t-SNE)
+- Uniform Manifold Approximation and Projection (UMAP)
+
+Before we go into the details of each method, it is important to mention that while the first method (PCA) can be used for downstream analysis of the data (such as cell clustering), the latter two methods (t-SNE and UMAP) should only be used for visualisation and not for any other kind of analysis. 
+We will go into the details below. 
+
+
+## Principal Components Analysis
+
+One of the most used and well-known methods of dimensionality reduction is principal components analysis (PCA). 
+This method performs a linear transformation of the data, such that a set of variables (genes) are turned into new variables called Principal Components (PCs). 
+These principal components combine information across several genes in a way that best captures the variability observed across samples (cells).
+
+After performing a PCA, there is no data loss, i.e. the total number of variables does not change. Only the fraction of variance captured by each variable differs. 
+The first PC explains the highest proportion of variance possible.
+The second PC explains the highest proportion of variance not explained by the first PC.
+And so on: successive PCs each explain a decreasing amount of variance not captured by the previous ones.
+Each PC is a dimension in the new space.
+
+What this video for a clear and intuitive explanation of how PCA works: 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/FgakZw6K1QQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+The advantage of using PCA is that the total amount of variance explained by the first few PCs is usually enough to capture most of the signal in the data. Therefore, we can exclude the remaining PCs without much loss of information. The stronger the correlation between the initial variables, the stronger the reduction in dimensionality. We will see below how we can choose how many PCs to retain for our downstream analysis. 
+
+<!--
+[Hugo] Leaving some of these details out, in favour of the video above
+
+Two transformations of the data are necessary:
+
+- center the data so that the sample mean for each column is 0 so the covariance matrix of the intial matrix takes a simple form
+- scale variance to 1, ie standardize, to avoid PCA loading on variables with large variance.
+-->
+
+### Running PCA
+
+As discussed in the [Preprocessing and QC](04_Preprocessing_And_QC.html#reading-cellranger-output-into-r) section, _SingleCellExperiment_ objects contain a _slot_ that can store representations of our data in reduced dimensions. 
+This is useful as we can keep all the information about our single-cell data within a single object. 
+The `runPCA()` function can be used to run PCA on a SCE object, and returns an updated version of that object with the PCA result added to the `reducedDim` slot. 
+Importantly, we can also restrict the PCA to use only some of the features (rows) of the object, which in this case we do by using the highly variable genes we identified earlier.
+
+```{r sce_pca_comp}
+# PCA ----
+sce <- runPCA(sce, subset_row = hvgs)
+sce
+```
+
+We can see that the output shows a new `reducedDimNames` value called "PCA". 
+We can access it by using the `reducedDim()` function:
+
+```{r reducedDim}
+# the result is stored as a matrix 
+# we print only the first few rows and columns for convenience
+reducedDim(sce, "PCA")[1:10, 1:5]
+```
+
+By default, `runPCA()` returns the first 50 PCs, but you can change this number by specifying the `ncomponents` option.
+
+One of the first things to investigate after doing a PCA is how much variance is explained by each PC. 
+This information is stored as an "attribute" (think of it as additional information) attached to the PCA matrix above. 
+Here is how we could extract that information into a data.frame and visualise it:
+
+```{r}
+# extract variance explained
+pca_pct_variance <- data.frame(variance = attr(reducedDim(sce, "PCA"), "percentVar"))
+pca_pct_variance$PC <- 1:nrow(pca_pct_variance)
+
+# visualise percentage variance explained by PCs (scree plot)
+pca_pct_variance %>% 
+  ggplot(aes(PC, variance)) +
+  geom_col() +
+  labs(y = "Variance explained (%)")
+```
+
+We can see how the two first PCs explain a substantial amount of the variance, and very little variation is explained beyond 10-15 PCs. 
+
+To visualise our cells in the reduced dimension space defined by PC1 and PC2, we can use the `plotReducedDim()` function:
+
+```{r}
+# visualise PC plot
+plotReducedDim(sce, dimred = "PCA", colour_by = "SampleName")
+```
+
+The proximity of cells in this plot reflects the similarity of their expression profiles.
+
+We can also plot several PCs at once, using the `ncomponents` option:
+
+```{r sce_pca_plotReducedDim}
+# visualise multiple PCs
+plotReducedDim(sce, dimred = "PCA", ncomponents = 3, colour_by = "SampleName")
+```
+
+Although these plotting functions are useful for quickly visualising our data, more customised visualisations can be used by using the `ggcells()` function, which extends the regular `ggplot()` function, but to work directly from the SCE object. 
+We can use it in a similar manner as we use the regular `ggplot()` function, except we can define aesthetics both from our `reducedDim` slot as well as `colData` and even `assays` (to plot particular gene's expression). 
+Here is an example, where we facet our plot:
+
+```{r ggcells}
+# more custom visualisations with ggcells (e.g. add facets)
+ggcells(sce, aes(x = PCA.1, y = PCA.2, colour = SampleName)) +
+  geom_point(size = 0.5) +
+  facet_wrap(~ SampleName) +
+  labs(x = "PC1", y = "PC2", colour = "Sample")
+```
+
+
+### PCA Diagnostics 
+
+There is a large number of potential confounders, artifacts and biases in scRNA-seq data. One of the main challenges stems from the fact that it is difficult to carry out a true technical replication to distinguish biological and technical variability. Here we will continue to explore how experimental artifacts can be identified and removed. 
+
+One of the ways to achieve this is to calculate the association between our PC scores and different variables associated with our cells such as sample groups, number of detected genes, total reads per cell, percentage of mitochondrial genes, etc.
+We can achieve this using the `getExplanatoryPCs()` function (and associated plotting function), which calculates the variance in each PC explained by those variables we choose:
+
+```{r}
+# extract correlations between different variables and our PC scores
+explan_pcs <- getExplanatoryPCs(sce,
+    variables = c(
+        "sum",
+        "detected",
+        "SampleGroup",
+        "SampleName",
+        "subsets_Mito_percent"
+    )
+)
+
+plotExplanatoryPCs(explan_pcs/100)
+```
+
+We can see that PC1 can be explained mostly by individual samples (`SampleName`), mitochondrial expression and mutation group (`SampleGroup`).  
+
+We can also compute the marginal R2 for each variable when fitting a linear model regressing expression values for each gene against just that variable, and display a density plot of the gene-wise marginal R2 values for the variables.
+
+```{r}
+# distribution of correlations between each gene's expression and our variables of interest
+plotExplanatoryVariables(sce,
+                         variables = c(
+                           "sum",
+                           "detected",
+                           "SampleGroup",
+                           "SampleName",
+                           "subsets_Mito_percent"
+                         ))
+```
+
+This analysis indicates that individual and subtype have the highest explanatory power for many genes, and we don't see technical covariates having as high correlations. If that were the case, we might need to repeat the normalization step while conditioning out for these covariates, or we would include them in downstream analysis. 
+
+
+### Chosing the number of PCs 
+
+How many of the top PCs should we retain for downstream analyses? The choice of the number of PCs is a decision that is analogous to the choice of the number of HVGs to use. Using more PCs will retain more biological signal at the cost of including more noise that might mask said signal. Much like the choice of the number of HVGs, it is hard to determine whether an “optimal” choice exists for the number of PCs. Even if we put aside the technical variation that is almost always uninteresting, there is no straightforward way to automatically determine which aspects of biological variation are relevant; one analyst’s biological signal may be irrelevant noise to another analyst with a different scientific question.
+
+Most practitioners will simply set the number of PCs to a “reasonable” but arbitrary value, typically ranging from 10 to 50. This is often satisfactory as the later PCs explain so little variance that their inclusion or omission has no major effect. For example, in our dataset, few PCs explain more than 1% of the variance in the entire dataset. 
+
+```{r, purl=FALSE}
+table(pca_pct_variance$variance > 1)
+```
+
+The most commonly used strategies to choose PCs for downstream analysis include: 
+
+* selecting the top X PCs (with X typically ranging from 10 to 50)
+* using the elbow point in the scree plot 
+* using technical noise 
+* using permutation
+
+#### Elbow point
+
+To choose the elbow point in our scree plot, we can use the following:
+
+```{r}
+# identify elbow point from explained variances
+chosen_elbow <- findElbowPoint(pca_pct_variance$variance)
+chosen_elbow
+```
+
+Here is our scree plot again, but this time with a vertical line indicating the elbow point:
+
+```{r}
+# scree plot (PC vs variance) with elbow highlighted
+pca_pct_variance %>% 
+  ggplot(aes(PC, variance)) +
+  geom_point() +
+  geom_vline(xintercept = chosen_elbow)
+```
+
+#### Denoising PCA
+
+The assumption of this method is that the biology drives most of the variance and hence should be captured by the first few PCs, while technical noise affects each gene independently, hence it should be captured by later PCs. 
+Therefore, our aim in this approach is to find the minimum number of PCs that explains more variance than the total technical variance across genes (estimated from our mean-variance trend).
+
+This method is implemented in the `denoisePCA()` function:
+
+```{r, warning=FALSE}
+# run denoise PCA step
+sce <- denoisePCA(sce, technical = gene_var)
+```
+
+If we look at our PCA result, we can see that it has 7 columns, which is close enough to the elbow method we used above. 
+
+```{r}
+# check dimensions of the "denoised" PCA
+ncol(reducedDim(sce, "PCA"))
+```
+
+#### Permutation
+
+We do not demonstrate this method, as it is more code intensive. 
+But the general idea is to permute (or "shuffle") a subset of the data, rerun the PCA and calculate the percentage of variance explained by each PC on this "random" dataset. 
+We can then compare the observed variance explained in the original data with this null or random expectation and determine a cutoff where the observed variance explained drops to similar values as the variance explained in the shuffled data. 
+
+```{r permutation_example, echo=FALSE, purl=FALSE}
+# mock example
+pca_pct_variance %>% 
+  mutate(Permuted = 1) %>% 
+  rename(Observed = variance) %>% 
+  pivot_longer(c(Observed, Permuted), values_to = "variance") %>% 
+  ggplot(aes(PC, variance)) +
+  geom_col(aes(fill = name), position = position_dodge()) +
+  geom_vline(xintercept = 8, linetype = 2) +
+  annotate(geom = "text", x = 8.1, y = 5, label = "PC8", hjust = 0) +
+  labs(fill = "", y = "% variance explained") +
+  scale_fill_brewer(palette = "Dark2") +
+  theme_minimal() +
+  theme(legend.position = c(1, 1), legend.justification = c(1, 1))
+```
+
+In this example (which is for illustration only) we may define a threshold at PC8, since after that the variance explained in the observed data drops below the levels in the permuted (randomised) data.
+
+
+## t-SNE: t-Distributed Stochastic Neighbor Embedding
+
+The t-Distributed Stochastic Neighbor Embedding (t-SNE) approach addresses the main shortcoming of PCA, which is that it can only capture linear transformations of the original variables (genes). Instead, t-SNE allows for non-linear transformations, while preserving the local structure of the data. This means that neighbourhoods of similar samples (cells, in our case) will appear together in a t-SNE projection, with distinct cell clusters separating from each other. 
+
+As you can see below, compared to PCA we get much tighter clusters of samples, with more structure in the data captured by two t-SNE axis, compared to the two first principal components. 
+
+```{r tsne_example, echo=FALSE, purl=FALSE}
+sce %>% 
+  runTSNE(dimred = "PCA") %>% 
+  ggcells(aes(TSNE.1, TSNE.2, colour = SampleName)) +
+  geom_point() +
+  ggthemes::scale_colour_tableau(palette = "Tableau 20") +
+  labs(colour = "Sample") +
+  theme_void()
+```
+
+We will not go into the details of the algorithm here, but briefly it involves two main steps: 
+
+- Calculating a similarity matrix between every pair of samples. This similarity is scaled by a _Normal_ distribution, such that points that are far away from each other are "penalised" with a very low similarity score. The variance of this normal distribution can be thought of as a "neighbourhood" size when computing similarities between cells, and is parameterised by a term called **perplexity**. 
+- Then, samples are projected on a low-dimensional space (usually two dimensions) such that the similarities between the points in this new space are as close as possible to the similarities in the original high-dimensional space. This step involves a stochastic algorithm that "moves" the points around until it converges on a stable solution. In this case, the similarity between samples is scaled by a t-distribution (that's where the "t" in "t-SNE" comes from), which is used instead of the _Normal_ to guarantee that points within a cluster are still distinguishable from each other in the 2D-plane (the t-distribution has "fatter" tails than the Normal distribution). 
+
+Watch this video if you want to learn more about how t-SNE works:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NEaUSP4YerM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+There are two important points to remember:
+
+- the **perplexity** parameter, which indicates the relative importance of the local and global patterns in the structure of the data set. The default value in the functions we will use is 50, but different values should be tested to ensure consistency in the results.
+- **stochasticity**: because the t-SNE algorithm is stochastic, running the analysis multiple times will produce slightly different results each time (unless we set a "seed" for the random number generator).
+
+See this interactive article on "[How to Use t-SNE Effectively](https://distill.pub/2016/misread-tsne/)", which illustrates how changing these parameters can lead to widely different results. 
+
+Importantly, because of the non-linear nature of this algorithm, strong interpretations based on how distant different groups of cells are from each other on a t-SNE plot are discouraged, as they are not necessarily meaningful. 
+This is why it is often the case that the x- and y-axis scales are omitted from these plots (as in the example above), as they are largely uninterpretable. 
+Therefore, **the results of a t-SNE projection should be used for visualisation only and not for downstream analysis (such as cell clustering)**. 
+
+
+### Running t-SNE
+
+Similarly to how we did with PCA, there are functions that can run a t-SNE directly on our SingleCellExperiment object. 
+We will leave this exploration for you to do in the following exercises, but the basic code is very similar to that used with PCA. For example, the following would run t-SNE with default options:
+
+```{r, eval=FALSE, purl=FALSE}
+sce <- runTSNE(sce)
+```
+
+One thing to note here is that, because of the computational demands of this algorithm, the general practice is to run it on the PCA results rather than on the full matrix of normalised counts. 
+The reason is that, as we've seen earlier, the first few PCs should capture most of the biologically meaningful variance in the data, thus reducing the influence of technical noise in our analysis, as well as substantially reducing the computational time to run the analysis.  
+
+Let's explore more about t-SNE in the following exercise. 
+
+:::exercise
+
+See the accompanying worksheet for this session, which includes the code below for the exercise. 
+We want to achieve the following: 
+
+- Add a t-SNE projection of the data to our SCE object
+- Explore how the stochasticity of the algorithm affects the results
+- Customise our visualisation to display gene expression on top of the t-SNE
+- Explore how the main tuneable parameter of the algorithm - perplexity - affects the results
+
+```{r exercise1, eval=FALSE}
+# Run t-SNE ----
+
+# add the t-SNE result to the reducedDim slot of the SCE object
+# we name this reducedDim "TSNE_perplex50"
+# we set perplexity = 50 (which is the default if we don't specify it)
+# we run t-SNE based on the PCA we ran previously
+set.seed(123) # set a random seed to ensure reproducibility
+sce <- runTSNE(sce, 
+               name = "TSNE_perplex50",
+               perplexity = 50, 
+               dimred = "PCA")
+
+# Make a custom visualisation using ggcells
+ggcells(sce, aes(x = TSNE_perplex50.1, y = TSNE_perplex50.2, 
+                 colour = SampleName)) +
+  geom_point()
+
+# Re-run the algorithm but change the random seed number. 
+# Do the results change dramatically between runs?
+FIXME
+
+# Instead of colouring by SampleName, colour by expression of known cell markers
+# CD79A (B cells)
+# CST3 (monocytes)
+# CD3D (T cells) 
+# HBA1 (erythrocytes)
+FIXME
+
+# Facet these plots by SampleName to better understand where each marker is mostly expressed
+FIXME
+
+# Explore different perplexity values (for example 5 and 500)
+# Do you get tighter or looser clusters?
+FIXME
+```
+
+**Bonus Exercise (advanced)**
+
+- Write a "for loop" to automate running the t-SNE with different perplexity values and different seeds. 
+- Write a "for loop" to automate plotting all those t-SNE projections, saving the results in a pdf file. 
+
+
+<details><summary>Hints for advanced exercise</summary>
+
+Here is a scaffold of how the "for loop" could be built to get you started:
+
+```{r, eval=FALSE, purl=FALSE}
+# make vectors of perplexity and seed values to test
+perplexities_to_use <- c(5, 50, 500)
+seeds_to_use <- c(1, 2)
+
+for (perplexity in perplexities_to_use){
+  for (seed in seeds_to_use){
+    
+    # make a name for the reduced dimensionality name
+    result_name <- paste0("TSNE_perplex", perplexity, "_seed", seed)
+    
+    # update the object
+    set.seed(seed)
+    sce <- runTSNE(FIXME)
+  
+  }
+}
+```
+
+To generate a pdf, you can initialise a "pdf graphical device" with `pdf()` and then close that device with `dev.off()`.
+In-between these two you could use a similar "for loop" as shown above, but this time generating a plot for each dimensionality reduction result. 
+
+```{r, eval=FALSE, purl=FALSE}
+pdf("tsne_plots.pdf")
+
+# Include "for loop" with a plotting step here
+
+dev.off()
+```
+
+
+</details>
+
+<details><summary>Answer</summary>
+
+Here is the complete script: 
+
+```{r exercise1_solution, eval=FALSE, purl=FALSE}
+# Run t-SNE ----
+
+# add the t-SNE result to the reducedDim slot of the SCE object
+# we name this reducedDim "TSNE_perplex50"
+# we set perplexity = 50 (which is the default if we don't specify it)
+# we run t-SNE based on the PCA we ran previously
+set.seed(123) # set a random seed to ensure reproducibility
+sce <- runTSNE(sce, 
+               name = "TSNE_perplex50",
+               perplexity = 50, 
+               dimred = "PCA")
+
+# Make a custom visualisation using ggcells
+ggcells(sce, aes(x = TSNE_perplex50.1, y = TSNE_perplex50.2, 
+                 colour = SampleName)) +
+  geom_point()
+
+# Re-run the algorithm but change the random seed number. 
+# Do the results change dramatically between runs?
+set.seed(321)
+sce <- runTSNE(sce, 
+               name = "TSNE_perplex50_seed321",
+               perplexity = 50, 
+               dimred = "PCA")
+
+ggcells(sce, aes(x = TSNE_perplex50_seed321.1, y = TSNE_perplex50_seed321.2, 
+                 colour = SampleName)) +
+  geom_point()
+
+
+# Modify the visualisation to colour the points based on logcounts of known cell markers
+# CD79A (B cells)
+# CST3 (monocytes)
+# CD3D (T cells) 
+# HBA1 (erythrocytes)
+ggcells(sce, aes(x = TSNE_perplex50_seed321.1, y = TSNE_perplex50_seed321.2, 
+                 colour = CD79A)) +
+  geom_point() +
+  scale_colour_viridis_c() # this is a colour-blind safe palette
+
+# Facet these plots by SampleName to better understand where each marker is mostly expressed
+ggcells(sce, aes(x = TSNE_perplex50_seed321.1, y = TSNE_perplex50_seed321.2, 
+                 colour = CD79A)) +
+  geom_point() +
+  scale_colour_viridis_c() +
+  facet_wrap(~ SampleName)
+
+# Explore different perplexity values (for example 5 and 500)
+# Do you get tighter or looser clusters?
+set.seed(321)
+sce <- runTSNE(sce, 
+               name = "TSNE_perplex5",
+               perplexity = 5, 
+               dimred = "PCA")
+sce <- runTSNE(sce, 
+               name = "TSNE_perplex500",
+               perplexity = 500, 
+               dimred = "PCA")
+
+# visualise
+ggcells(sce, aes(x = TSNE_perplex5.1, y = TSNE_perplex5.2, 
+                 colour = SampleName)) +
+  geom_point() +
+  labs(title = "Perplexity 5")
+
+ggcells(sce, aes(x = TSNE_perplex50.1, y = TSNE_perplex50.2, 
+                 colour = SampleName)) +
+  geom_point() +
+  labs(title = "Perplexity 50")
+
+ggcells(sce, aes(x = TSNE_perplex500.1, y = TSNE_perplex500.2, 
+                 colour = SampleName)) +
+  geom_point() +
+  labs(title = "Perplexity 500")
+```
+
+And the code for the advanced exercise: 
+
+(Apologies, this is still under development!)
+
+```{r exercise1_bonus_solution, eval=FALSE, purl=FALSE}
+# Bonus t-SNE exercise (advanced) ----
+
+# Write a "for loop" to automate running the t-SNE with different perplexity values and different seeds. 
+
+
+# Write a "for loop" to automate plotting all those t-SNE projections, saving the results in a pdf file. 
+
+```
+
+
+Some things to note from our data exploration: 
+
+- Changing the random seed doesn't seem to _qualitatively_ change the results dramatically. The same groups of cells are still seen. However, their relative position on the axis might change from run to run. 
+- Low perplexities will favour resolution of finer structure, possibly to the point that the visualization is compromised by random noise. Thus, it is advisable to test different perplexity values to ensure that the choice of perplexity does not drive the interpretation of the plot.
+- Exploring the expression of known marker genes (from literature or previous experiments we might have done) may help us interpret these plots and judge whether a particular choice of perplexity is adequate to represent the expected cell types in our data.
+
+</details>
+
+:::
+
+
+## UMAP: Uniform Manifold Approximation and Projection
+
+Simiarly to t-SNE, UMAP performs a non-linear transformation of the data to project it down to lower dimensions. 
+One difference to t-SNE is that this method claims to preserve both local and global structures (i.e. the relative positions of clusters are, most of the times, meaningful).
+However, it is worth mentioning that there is some debate as to whether this is always the case, as is explored in this recent paper by [Chari, Banerjee and Pachter (2021)](https://doi.org/10.1101/2021.08.25.457696). 
+
+Compared to t-SNE, the UMAP visualization tends to have more compact visual clusters with more empty space between them. It also attempts to preserve more of the global structure than t -SNE. From a practical perspective, UMAP is much faster than t-SNE, which may be an important consideration for large datasets. 
+
+Simiarly to t-SNE, since this is a non-linear method of dimensionality reduction, **the results of a UMAP projection should be used for visualisation only and not for downstream analysis (such as cell clustering)**. 
+
+
+### Running UMAP
+
+Running UMAP is very similar to what we've seen already for PCA and t-SNE, only the function name changes:
+
+```{r runUMAP, purl=FALSE}
+# UMAP with default options
+set.seed(123) # set random seed for reproducible results
+sce <- runUMAP(sce)
+```
+
+```{r umap_example, echo=FALSE, purl=FALSE}
+ggcells(sce, aes(UMAP.1, UMAP.2, colour = SampleName)) +
+  geom_point() +
+  ggthemes::scale_colour_tableau(palette = "Tableau 20") +
+  labs(colour = "Sample") +
+  theme_void()
+```
+
+Because this UMAP also involves a series of randomization steps, setting the random-generator seed (as we did above) is critical if we want to obtain reproducible results after each run.
+
+Like t-SNE, UMAP has its own suite of hyperparameters that affect the visualization. Of these, the number of neighbors (n_neighbors) and the minimum distance between embedded points (min_dist) have the greatest effect on the granularity of the output. If these values are too low, random noise will be incorrectly treated as high-resolution structure, while values that are too high will discard fine structure altogether in favor of obtaining an accurate overview of the entire dataset. Again, it is a good idea to test a range of values for these parameters to ensure that they do not compromise any conclusions drawn from a UMAP plot. 
+
+Similarly to what we did with t-SNE, we will explore this further in the following exercise.
+
+
+:::exercise
+
+The following code can be found in the accompanying worksheet for this section. 
+Our main objectives are: 
+
+- Add a UMAP projection of the data to our SCE object
+- Explore how the main tuneable parameter of the algorithm - neighbourhood size - affects the results
+- Compare how UMAP compares to t-SNE in terms of revealing structure in the data
+
+```{r exercise2, eval=FALSE}
+# Run UMAP ----
+
+# run the UMAP with 50 neighbours
+set.seed(123) # set seed for reproducibility
+sce <- runUMAP(sce, 
+               name = "UMAP_neighbors50",
+               dimred = "PCA",
+               FIXME)
+
+# visualise the resulting UMAP projection (colour cells by sample)
+FIXME
+
+# run the UMAP with 5 and 500 neighbours and compare the results
+FIXME
+
+# compare the UMAP projection with the t-SNE projections 
+# would you prefer one over the other?
+FIXME
+```
+
+
+<details><summary>Answer</summary>
+
+Here is the complete script: 
+
+```{r exercise2_solution, eval=FALSE, purl=FALSE}
+# Run UMAP ----
+
+# run the UMAP with 50 neighbours
+set.seed(123) # set seed for reproducibility
+sce <- runUMAP(sce, 
+               name = "UMAP_neighbors50",
+               dimred = "PCA",
+               n_neighbors = 50)
+
+# visualise the resulting UMAP projection
+# colour cells by sample
+ggcells(sce, aes(x = UMAP_neighbors50.1, y = UMAP_neighbors50.2, 
+                 colour = SampleName)) +
+  geom_point() +
+  theme_void()
+
+# run the UMAP with 5 and 500 neighbours and compare the results
+set.seed(123) # set seed for reproducibility
+sce <- runUMAP(sce, 
+               name = "UMAP_neighbors5",
+               dimred = "PCA",
+               n_neighbors = 5)
+sce <- runUMAP(sce, 
+               name = "UMAP_neighbors500",
+               dimred = "PCA",
+               n_neighbors = 500)
+
+ggcells(sce, aes(x = UMAP_neighbors5.1, y = UMAP_neighbors5.2, 
+                 colour = SampleName)) +
+  geom_point() +
+  theme_void() + 
+  labs(title = "Neighbours = 5")
+ggcells(sce, aes(x = UMAP_neighbors500.1, y = UMAP_neighbors500.2, 
+                 colour = SampleName)) +
+  geom_point() +
+  theme_void() +
+  labs(title = "Neighbours = 500")
+
+# compare the UMAP projection with the t-SNE projections 
+# would you prefer one over the other?
+ggcells(sce, aes(x = TSNE_perplex50.1, y = TSNE_perplex50.2, 
+                 colour = SampleName)) +
+  geom_point() +
+  theme_void()
+ggcells(sce, aes(x = UMAP_neighbors50.1, y = UMAP_neighbors50.2, 
+                 colour = SampleName)) +
+  geom_point() +
+  theme_void()
+```
+
+To answer some of those questions:
+
+- Increasing the number of neighbours used in the analysis results in some apparent groups of cells being "merged" with each other. Conversely, picking too small a size creates many groups of cells, possibly picking up on some noise. However, qualitatively the results are relatively robust to the number of neighbours in this dataset, with the major groups of cells consistently appearing together. 
+- Both t-SNE and UMAP show similar patterns in the data, so which one to pick in this case seems to be a matter of personal preference. However, UMAP is a more modern algorithm with better properties when it comes to keeping relative positions between clusters. 
+
+</details>
+
+
+:::
+
+# Save SCE object
+
+Optionally, we can save our object, which now contains our dimensionality reduction analysis in it. 
+This is useful as it will save time next time we pick up on our analysis. 
+
+```{r, eval=FALSE, purl=FALSE}
+# save sce object to which we have added dimensionality reduction slots:
+saveRDS(sce, "~/Course_Materials/scRNAseq/Robjects/caron_postDeconv_5hCellPerSpl_dimRed.Rds")
+```
+
+
+# Extra: feature selection and dimensionality reduction with `Seurat`
+
+<details><summary>Using the `Seurat` package</summary>
+
+Seurat is another very popular scRNA-seq analysis package and provides useful tools for analysing PCA loadings. We will convert our `SCE` object to a `Seurat` object to use these tools. 
+
+```{r, purl=FALSE}
+# read our original SCE object
+sce <- readRDS("Robjects/caron_postDeconv_5hCellPerSpl.Rds")
+
+# convert SCE object to a Seurat object 
+library(Seurat)
+seurat_obj <- as.Seurat(sce, counts = "counts", data = "logcounts")
+
+# identify the 2000 most highly-variable genes
+seurat_hvgs <- FindVariableFeatures(seurat_obj, selection.method = "vst", nfeatures = 2000)
+
+# scale the data for PCA for the highly variable genes 
+seurat_obj <- ScaleData(seurat_obj, features = VariableFeatures(seurat_hvgs))
+
+# run PCA 
+seurat_obj <- RunPCA(seurat_obj, features = VariableFeatures(seurat_hvgs), 
+                     verbose = FALSE)
+
+# PCA Plot 
+DimPlot(seurat_obj, reduction = "pca")
+```
+
+We can see that the PCA is similar to what we obtained before (there are some differences, which are related to how the variable genes were chosen in this case). 
+
+To visualise the top most correlated genes with each PC, we can use the following:
+
+```{r, purl=FALSE}
+VizDimLoadings(seurat_obj, dims=1:2)
+```
+
+This shows the genes that have highest loading (correlation) with each PC axis. 
+If we know something about the biology of the system we are studying, these may give some clues as to what is driving the separation of cells along each PC axis. 
+
+The loadings can also be visualised as a heatmap, showing the cells ordered by the PC scores and the genes ordered by their loading along that PC:
+
+```{r, purl=FALSE}
+DimHeatmap(seurat_obj, dims = 1:2, cells = 500, balanced = TRUE)
+```
+
+Look at [`Seurat`'s excellent documentation](https://satijalab.org/seurat/index.html) to learn more about this and other uses of this package. 
+
+</details>
+
+# Key Points and Resources
+
+:::highlight
+
+**Key Points:**
+
+- Dimensionality reduction methods allow us to represent high-dimensional data in lower dimensions, while retaining biological signal. 
+- The most common methods used in scRNA-seq analysis are PCA, t-SNE and UMAP.
+- PCA uses a linear transformation of the data, which aims at defining new dimensions (axis) that capture most of the variance observed in the original data. This allows to reduce the dimension of our data from thousands of genes to 10-20 principal components. 
+- The results of PCA can be used in downstream analysis such as cell clustering, trajectory analysis and even as input to non-linear dimensionality reduction methods such as t-SNE and UMAP.
+- t-SNE and UMAP are both non-linear methods of dimensionality reduction. They aim at keeping similar cells together and dissimilar clusters of cells apart from each other. 
+- Because these methods are non-linear, they should only be used for data visualisation, and not for downstream analysis. 
+
+:::
+
+Further reading:
+
+- OSCA book chapters (Bioconductor-based packages):
+  - [Feature Selection](http://bioconductor.org/books/release/OSCA.basic/feature-selection.html)
+  - [Dimensionality Reduction](http://bioconductor.org/books/release/OSCA.basic/dimensionality-reduction.html)
+- Seurat documentation (for the alternative `Seurat` package): [basic tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html)
+
+
+# Session information
+
+<details><summary>`sessionInfo()`</summary>
+
+```{r, echo=FALSE, purl=FALSE}
+sessionInfo()
+```
+
+</details>
