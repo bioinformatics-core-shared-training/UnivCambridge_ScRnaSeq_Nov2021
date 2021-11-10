@@ -1,13 +1,13 @@
 ---
 title: "Feature Selection and Dimensionality Reduction"
-author: "Zeynep Kalender-Atak; Hugo Tavares"
+author: "Hugo Tavares"
 date: 'Nov 2021'
 output:
   ioslides_presentation:
     widescreen: true
     smaller: true
     incremental: false 
-    logo: Images/crukcc-transparent-small.png
+    logo: ../Images/uniOfCamCrukLogos.png
     css: css/stylesheet.css
 ---
 
@@ -237,4 +237,9 @@ knitr::include_graphics('Images/dim_red_graph_based.png')
 
 ## Acknowledgments  
 
-Slides are adapted from Paulo Czarnewski
+Slides are adapted from Paulo Czarnewski and Zeynep Kalender-Atak
+
+**References (image sources):**
+
+- [Orchestrating Single-Cell Analysis with Bioconductor](http://bioconductor.org/books/release/OSCA/)
+- [Parametric UMAP embeddings for representation and semi-supervised learning](https://arxiv.org/abs/2009.12981)
