@@ -436,17 +436,17 @@ this filtering in two steps.
 
 2. Comparison of droplet RNA profile with background:  
   This algorithm is based on one initially developed in the `dropletUtils` R
-  package. Cell Ranger selects all droplets with a UMI count of less than 100
+  package. Cell Ranger selects all droplets with a UMI count of less than 500
   (this will usually be 100's of thousands). This set of droplets is assumed to
   definitely not contain cells and as such any RNA detected is merely background
   within the media (due to damaged cells leaking RNA). An RNA profile is derived
-  for this background. The RNA profile of all droplets with more than 100 UMIs
+  for this background. The RNA profile of all droplets with more than 500 UMIs
   but less than the hard UMI threshold is then compared to this background
   profile. Any droplet with a profile that differs significantly from the
   background profile is called as a cell.
 
 A detailed description of the Cell Calling algorithm, along with explanations
-of the other algorithms used in the alignemt and countings steps, can be found
+of the other algorithms used in the alignment and countings steps, can be found
 on [the 10x Cell Ranger pages](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/algorithms/overview)
 
 The plot below shows a "barcode rank plot". This is taken from the Cell Ranger
