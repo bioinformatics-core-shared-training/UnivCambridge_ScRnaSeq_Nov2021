@@ -92,10 +92,9 @@ Two data sets:
     + [Practical](Markdowns/05_normalisation.html)     
     <!-- + [Exercise Solutions](Markdowns/normalisation_exercise_solutions.html) -->
 * 12:30 - 13:30 **lunch break**
-* 13:30 - 15:25 Feature selection and dimensionality reduction - Hugo Tavares
-    + [Slides](Slides/FeatureSelectionAndDimensionalityReductionSlides.html)
-    + [Dimensionality reduction, feature selection](Markdowns/dimRedFeatSel_2021.html)
-<!-- + [Exercise Solutions](CourseMaterials/Exercises/DimRedChallengeSolutions.html) -->
+* 13:30 - 15:25 **Feature selection and dimensionality reduction** - Hugo Tavares
+    + [Slides](Slides/06_FeatureSelectionAndDimensionalityReduction_slides.html)
+    + [Materials](Markdowns/06_FeatureSelectionAndDimensionalityReduction.html)
 * 15:25 - 15:35 10 min **break**
 * 15:35 - 17:30 **Batch correction and data set integration** - Abigail Edwards
     + [Slides](Slides/DataIntegrationAndBatchCorrectionSlides.html)  
