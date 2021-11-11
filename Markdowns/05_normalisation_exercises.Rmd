@@ -33,7 +33,7 @@ opts_chunk$set(fig.width=7, fig.height=7)
 set.seed(123) # for reproducibility
 ```
 
-```{r libraries_norm_GSM3872434_allCells, include=FALSE, results='hide', message=FALSE, warning=FALSE}
+```{r libraries_norm_GSM3872434_allCells, results='hide', message=FALSE, warning=FALSE}
 library(scater)
 library(scran)
 library(tidyverse)

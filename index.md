@@ -91,7 +91,7 @@ Two data sets:
     + [Slides](Slides/05_NormalisationSlides.html) <!-- \([pdf](scRNAseq/Slides/05_normalisationSlides.pdf)\) -->
     + [Practical](Markdowns/05_normalisation.html)     
     + [Exercises](Markdowns/05_normalisation_exercises.html)
-    <!-- + [Exercise Solutions](Markdowns/05_normalisation_exercise_solutions.html) -->
+    + [Exercise Solutions](Markdowns/05_normalisation_exercises_solutions.html)
 * 12:30 - 13:30 **lunch break**
 * 13:30 - 15:25 **Feature selection and dimensionality reduction** - Hugo Tavares
     + [Slides](Slides/06_FeatureSelectionAndDimensionalityReduction_slides.html)
