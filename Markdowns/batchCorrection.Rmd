@@ -61,14 +61,14 @@ sample1.nz.sce <- SingleCellExperiment(list(counts=counts(sce[, sce$Run %in% c("
 sample2.nz.sce <- SingleCellExperiment(list(counts=counts(sce[, sce$Run %in% c("SRR9264352")])),
                                        colData=colData(sce[, sce$Run %in% c("SRR9264352")]))
 
-saveRDS(sample1.nz.sce, "Robjects/BC_sample1.rds")
-saveRDS(sample2.nz.sce, "Robjects/BC_sample2.rds")
+saveRDS(sample1.nz.sce, "Robjects/BC_sample1.Rds")
+saveRDS(sample2.nz.sce, "Robjects/BC_sample2.Rds")
 ```
 The above two code chunks just illustrate how the starting demonstration files for this chapter were made, if you are working from our github repo you will not need this. if you are testing batch corrections on your own samples, for this first part, read in each sample as a separate sce object.
 
 ```{r}
-sample1.sce <- readRDS("Robjects/BC_sample1.rds")
-sample2.sce <- readRDS("Robjects/BC_sample2.rds")
+sample1.sce <- readRDS("Robjects/BC_sample1.Rds")
+sample2.sce <- readRDS("Robjects/BC_sample2.Rds")
 ```
 
 ## Normalise each separately and re-pool
@@ -160,13 +160,13 @@ From the above plots you can see that even though the samples should be the same
 sample3.sce <- SingleCellExperiment(list(counts=counts(sce[, sce$Run %in% c("SRR9264351", "SRR9264352")])),
                                        colData=colData(sce[, sce$Run %in% c("SRR9264351", "SRR9264352")]))
 
-saveRDS(sample3.sce, "./Robjects/BC_sample3.rds")
+saveRDS(sample3.sce, "./Robjects/BC_sample3.Rds")
 ```
 The above chunk illustrates how the combined object was made (`sample 3`) but if you are using our repo you can just load it in and process it with the preceeding steps.
 
 ```{r tog_norm_batch_GSM3872442}
 
-sample3.sce <- readRDS("./Robjects/BC_sample3.rds")
+sample3.sce <- readRDS("./Robjects/BC_sample3.Rds")
 
 sample3.qclusters <- quickCluster(sample3.sce, method="igraph")
 sample3.sce <- computeSumFactors(sample3.sce, min.mean=0.1, cluster=sample3.qclusters)
