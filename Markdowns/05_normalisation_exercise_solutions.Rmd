@@ -1,5 +1,5 @@
 ---
-title: "CRUK CI Summer School 2020 - introduction to single-cell RNA-seq analysis"
+title: "Introduction to single-cell RNA-seq analysis"
 subtitle: 'Normalisation - GSM3872434 sample'
 
 author: "Stephane Ballereau"
@@ -26,7 +26,7 @@ single sample: ETV6-RUNX1_1 (aka GSM3872434).
 ```{r norm_Caron.knitr_options, echo=FALSE, results="hide", message=FALSE}
 require(knitr)
 # set working directory# set working directory# set working directory
-knitr::opts_knit$set(root.dir = '/home/ubuntu/Course_Materials/scRNAseq/Markdowns')
+knitr::opts_knit$set(root.dir = '/home/ubuntu/Course_Materials/Exercises')
 # set other chunk variables
 opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE)
 opts_chunk$set(fig.width=7, fig.height=7)

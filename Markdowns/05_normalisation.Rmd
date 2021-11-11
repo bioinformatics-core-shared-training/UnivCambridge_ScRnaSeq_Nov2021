@@ -1,5 +1,5 @@
 ---
-title: "CRUK CI Summer School 2020 - introduction to single-cell RNA-seq analysis"
+title: "Introduction to single-cell RNA-seq analysis"
 author: "Stephane Ballereau"
 subtitle: Normalisation - Caron data set - 500 cells per sample
 output:
