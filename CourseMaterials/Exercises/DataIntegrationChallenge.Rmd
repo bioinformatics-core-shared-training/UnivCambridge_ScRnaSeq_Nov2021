@@ -1,7 +1,7 @@
 ---
 title: "DataIntergrationChallenge"
 author: "Abbi Edwards"
-date: "18/07/2021"
+date: "11/11/2021"
 output: html_document
 ---
 
@@ -25,9 +25,8 @@ library(cowplot)
 
 ```{r Load}
 
-p.tsne <- readRDS("../Robjects/DataIntegration_p.tsne.rds")
-mnn.out <- readRDS("../Robjects/DataIntegration_mnn.out.rds")
-clusters.mnn <- readRDS("../Robjects/DataIntegration_clusters.mnn.rds")
+p.tsne <- readRDS("../Robjects/DataIntegration_p.tsne.Rds")
+mnn.out <- readRDS("../Robjects/DataIntegration_mnn.out.Rds")
 
 ```
 
