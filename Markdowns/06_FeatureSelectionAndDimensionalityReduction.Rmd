@@ -158,15 +158,17 @@ One of the most used and well-known methods of dimensionality reduction is princ
 This method performs a linear transformation of the data, such that a set of variables (genes) are turned into new variables called Principal Components (PCs). 
 These principal components combine information across several genes in a way that best captures the variability observed across samples (cells).
 
+Watch the video linked below for more details of how PCA works: 
+
+<a href="https://www.youtube.com/embed/FgakZw6K1QQ" target="_blank">
+<img src="https://img.youtube.com/vi/FgakZw6K1QQ/0.jpg" alt="StatQuest: PCA" height="200">
+</a>
+
 After performing a PCA, there is no data loss, i.e. the total number of variables does not change. Only the fraction of variance captured by each variable differs. 
 The first PC explains the highest proportion of variance possible.
 The second PC explains the highest proportion of variance not explained by the first PC.
 And so on: successive PCs each explain a decreasing amount of variance not captured by the previous ones.
 Each PC is a dimension in the new space.
-
-What this video for a clear and intuitive explanation of how PCA works: 
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/FgakZw6K1QQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 The advantage of using PCA is that the total amount of variance explained by the first few PCs is usually enough to capture most of the signal in the data. Therefore, we can exclude the remaining PCs without much loss of information. The stronger the correlation between the initial variables, the stronger the reduction in dimensionality. We will see below how we can choose how many PCs to retain for our downstream analysis. 
 
@@ -395,7 +397,9 @@ We will not go into the details of the algorithm here, but briefly it involves t
 
 Watch this video if you want to learn more about how t-SNE works:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/NEaUSP4YerM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<a href="https://www.youtube.com/embed/NEaUSP4YerM" target="_blank">
+<img src="https://img.youtube.com/vi/NEaUSP4YerM/0.jpg" alt="StatQuest: t-SNE" height="200">
+</a>
 
 There are two important points to remember:
 
