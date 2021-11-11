@@ -1,5 +1,5 @@
 ---
-title: "CRUK CI Summer School 2020 - introduction to single-cell RNA-seq analysis"
+title: "Introduction to single-cell RNA-seq analysis"
 subtitle: 'Normalisation - GSM3872434 sample'
 
 author: "Stephane Ballereau"
@@ -8,7 +8,7 @@ output:
     df_print: paged
     toc: yes
     number_sections: true
-    code_folding: hide
+    code_folding: show
   html_notebook:
     code_folding: hide
     toc: yes
@@ -26,9 +26,9 @@ single sample: ETV6-RUNX1_1 (aka GSM3872434).
 ```{r norm_Caron.knitr_options, echo=FALSE, results="hide", message=FALSE}
 require(knitr)
 # set working directory# set working directory# set working directory
-knitr::opts_knit$set(root.dir = '/home/ubuntu/Course_Materials/scRNAseq/Challenges')
+knitr::opts_knit$set(root.dir = '/home/ubuntu/Course_Materials/Exercises')
 # set other chunk variables
-opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE)
+opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, eval=FALSE)
 opts_chunk$set(fig.width=7, fig.height=7)
 set.seed(123) # for reproducibility
 ```
@@ -54,7 +54,7 @@ colData(sce)$SampleName <- colData(sce)$Sample
 
 Select cells for ETV6-RUNX1_1:
 
-```{r GSM3872434_downsample, eval=TRUE}
+```{r GSM3872434_downsample}
 # have new list of cell barcodes for each sample
 sce.master <- sce
 vec.bc <- colData(sce.master) %>%

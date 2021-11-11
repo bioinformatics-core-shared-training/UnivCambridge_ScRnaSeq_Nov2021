@@ -1,25 +1,20 @@
 ---
 title: "Introduction to single-cell RNA-seq analysis - Normalisation"
 author: "Stephane Ballereau"
-date: "July 2021"
+date: "November 2021"
 output:
-  beamer_presentation: default
-  slidy_presentation: default
   ioslides_presentation:
-    logo: ../Images/CRUK_CC_greyBgd.jpg
+    logo: ../Images/uniOfCamCrukLogos.png
     smaller: yes
     widescreen: yes
     css: css/stylesheet.css
+  beamer_presentation: default
+  slidy_presentation: default
 ---
     
-<!--
-    logo: Images/CRUK_CC_web.jpg
--->
-
 ```{r include=FALSE}
 library(tidyr)
 library(dplyr)
-#source("SOME_SCRIPT.R")
 ```
 
 ## Outline
@@ -31,6 +26,18 @@ library(dplyr)
 * Deconvolution
 
 * sctransform
+
+## Workflow
+
+```{r echo=FALSE, out.width='60%', fig.align='center'}
+knitr::include_graphics('Images/workflow2.png')
+```
+
+## Workflow
+
+```{r echo=FALSE, out.width='60%', fig.align='center'}
+knitr::include_graphics('Images/workflow2_normalisation.png')
+```
 
 ## Motivation
 
@@ -82,7 +89,7 @@ DESeq's size factor
   * For each cell
     * compute for each gene the ratio of its expression to its geometric mean,
     * derive the cell's size factor as the median ratio across genes.
-  * Not suitable for sparse scRNA-seq data as the geometric is computed on non-zero
+  * Not suitable for sparse scRNA-seq data as the geometric mean is computed on non-zero
 values only.
 
 ## Deconvolution
