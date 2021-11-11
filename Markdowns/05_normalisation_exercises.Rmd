@@ -107,7 +107,7 @@ table(clust)
 # deconvolve
 
 
-# seet size factors
+# set size factors
 
 
 # size factors distribution summary
