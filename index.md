@@ -88,7 +88,7 @@ Two data sets:
 
 * 09:30 - 09:40 Recap <!-- Stephane -->
 * 09:40 - 12:30 **Normalisation** - Stephane Ballereau
-    + [Slides](Slides/05_normalisationSlides.html) <!-- \([pdf](scRNAseq/Slides/05_normalisationSlides.pdf)\) -->
+    + [Slides](Slides/05_NormalisationSlides.html) <!-- \([pdf](scRNAseq/Slides/05_normalisationSlides.pdf)\) -->
     + [Practical](Markdowns/05_normalisation.html)     
     + [Exercises](Markdowns/05_normalisation_exercises.html)
     <!-- + [Exercise Solutions](Markdowns/05_normalisation_exercise_solutions.html) -->
