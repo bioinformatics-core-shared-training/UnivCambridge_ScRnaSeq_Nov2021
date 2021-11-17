@@ -24,8 +24,8 @@ library(cowplot)
 
 ```{r Load}
 
-p.tsne <- readRDS("./Robjects/DataIntegration_p.tsne.rds")
-mnn.out <- readRDS("./Robjects/DataIntegration_mnn.out.rds")
+p.tsne <- readRDS("./Robjects/DataIntegration_p.tsne.Rds")
+mnn.out <- readRDS("./Robjects/DataIntegration_mnn.out.Rds")
 
 ```
 

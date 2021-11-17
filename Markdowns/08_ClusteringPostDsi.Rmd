@@ -1,7 +1,7 @@
 ---
-title: "CRUK CI Summer School 2021 - Introduction to single-cell RNA-seq analysis"
+title: "Introduction to single-cell RNA-seq analysis"
 author: "Stephane Ballereau"
-date: "July 2021"
+date: "November 2021"
 subtitle: Clustering
 output:
   html_document:
@@ -76,7 +76,7 @@ We will load the R file keeping the SCE (SingleCellExperiment) object with the n
 
 ```{r}
 # Read mnn.out object in:
-sce <- readRDS("../Robjects/DataIntegration_mnn.out.rds") # auto.merge
+sce <- readRDS("../Robjects/DataIntegration_mnn.out.Rds") # auto.merge
 ```
 
 Number of cells: `r ncol(sce)`.

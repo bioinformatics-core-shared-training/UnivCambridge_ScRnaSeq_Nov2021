@@ -65,7 +65,7 @@ fontsize <- theme(axis.text=element_text(size=12), axis.title=element_text(size=
 
 
 ```{r}
-sce <- readRDS("../Robjects/DataIntegration_mnn.out.rds") # auto.merge
+sce <- readRDS("../Robjects/DataIntegration_mnn.out.Rds") # auto.merge
 
 # remove ETV6-RUNX1_4
 bcToKeep <- colData(sce) %>%
