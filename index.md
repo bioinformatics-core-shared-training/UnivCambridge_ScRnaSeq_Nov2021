@@ -99,7 +99,7 @@ Two data sets:
 * 15:25 - 15:35 10 min **break**
 * 15:35 - 17:30 **Batch correction and data set integration** - Abigail Edwards
     + [Slides](Slides/07_DataIntegrationAndBatchCorrectionSlides.html)  
-    + [Data set integration](Markdowns/07_dataSetIntegration_PBMMC_ETV6-RUNX1.html)
+    + [Data set integration](Markdowns/07_DataSetIntegration_PBMMC_ETV6-RUNX1.html)
     <!-- extended ? -->
 
 ### Day 3: Thursday 18th Nov
@@ -112,8 +112,8 @@ Two data sets:
 * 11:05 - 11:15 10 min **break** 
 * 11:15 - 12:30 **Identification of cluster marker genes** - Hugo Tavares
     + [Slides](Slides/MarkerIdentificationSlides.html)
-    + [Cluster marker genes](Markdowns/09_ClusterMarkerGenes2021.html)
-    <!-- + [Exercise Solutions](scRNAseq/CourseMaterials/Exercises/ClusterMarkerGenes2021.Exercise.Solutions.html) -->
+    + [Cluster marker genes](Markdowns/09_ClusterMarkerGenes.html)
+    + Worksheet in `Exercises/09_ClusterMarkerGenes.R`
 * 12:30 - 13:30 **lunch break**
 * 13:30 - 15:25 **Differential expression between conditions** - Stephane Ballereau
     + [Slides](Slides/10_MultiSplCompSlides.html)
