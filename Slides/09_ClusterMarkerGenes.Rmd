@@ -1,0 +1,184 @@
+---
+title: "Marker Gene Identification"
+author: "Zeynep Kalender-Atak; Hugo Tavares"
+date: 'Nov 2021'
+output:
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+    logo: ../Images/uniOfCamCrukLogos.png
+    css: css/stylesheet.css
+---
+
+## Single Cell RNAseq Analysis Workflow
+
+```{r echo=FALSE, out.width='60%', fig.align='center'}
+knitr::include_graphics('Images/workflow2_cluMarkerGenes.png')
+```
+
+## Identifying Cluster Marker Genes
+
+```{r echo=FALSE, out.width= "50%", out.extra='style="float:left; padding:20px"'}
+knitr::include_graphics('Images/tsne_clusters.png')
+```
+
+Our goal is to identify genes that are differently expressed between clusters
+
+* exclusively expressed in a single cluster or not
+
+* different methods that test for:
+
+  * differences in the mean expression level
+  
+  * differences in the rank of expression
+  
+  * differences in the proportion of cells expressing the gene
+  
+* compile a summary table
+
+
+## Differential expression
+
+* Differential expression is comparative. Common comparisons include: 
+
+* pairwise cluster comparisons
+
+    + eg. cluster 1 vs cluster2, cluster 1 vs cluster 3, cluster 2 vs cluster 3, etc...
+
+* for a given cluster find 'marker genes' that are: 
+
+    + DE compared to at least one other cluster
+    + DE compared to each of the other clusters
+    + DE compared to “most” of the other clusters
+    + DE and up-regulated (easier to interpret)
+    
+* cell-type comparisons (if cell type is known) - with and without clustering
+
+## `findMarkers`
+
+```{r, eval=FALSE}
+findMarkers(
+  sce, 
+  groups = sce$louvain,       # clusters to compare
+  block = sce$SampleGroup,    # covariates in statistical model
+  test.type = "t",            # t-test (default)
+  direction = "any",          # test for either higher or lower expression (default)
+  lfc = 0,                    # null hypothesis log-fold-change = 0 (default)
+  pval.type = "any"           # ranking of p-values based on any comparison (default)
+)
+```
+
+
+
+## `findMarkers`
+
+```{r, eval=FALSE}
+findMarkers(
+  sce, 
+  groups = sce$louvain,       # clusters to compare
+  block = sce$SampleGroup,    # covariates in statistical model
+  test.type = "t",            # t-test (default)
+  direction = "any",          # test for either higher or lower expression (default)
+  lfc = 0,                    # null hypothesis log-fold-change = 0 (default)
+  pval.type = "any"           # ranking of p-values based on any comparison (default)
+)
+```
+
+
+```{r echo=FALSE, out.width='90%', fig.align='center'}
+knitr::include_graphics('Images/findmarkers_testType.png')
+```
+
+
+## Gene-wise null hypothesis
+
+* t-test: "Is the mean expression of a gene in cluster 1 and cluster 2 the same?"
+
+* Wilcoxon rank-sum test: "It is equally likely that a randomly selected cell from cluster 1 has higher or lower expression of a gene than a randomly selected cell from cluster 2?"
+
+* Binomial test: "Is the probability of a gene being expressed the same in cluster 1 and cluster 2?"
+
+
+## Statistical challenges
+
+```{r echo=FALSE, out.width= "45%", out.extra='style="float:left; padding:30px"'}
+knitr::include_graphics('Images/marker_gene_distributions.png')
+```
+
+To an extent, all these models poorly capture the underlying features of the data.
+
+* high noise levels (technical and biological factors)
+
+* small library sizes 
+
+* small amounts of available mRNAs result in amplification biases and dropout events 
+
+* 3' bias, partial coverage, uneven depth of transcripts
+
+* stochastic nature of transcription 
+
+* multimodality in gene expression (presence of multiple possible cell states within a cell population)
+
+<!--
+## Parametric vs Non-parametric tests 
+
+* The better a model captures the data, the better (more accurate) are the statistical inferences
+
+* When we cannot fit a model to our data, we resort to non-parametric models (e.g. Wilcoxon rank-sum test, Kruskal-Wallis, Kolmogorov-Smirnov test)
+
+* Non-parametric tests generally convert observed expression values to ranks
+
+* They test whether the distribution of ranks for one group are significantly different from the distribution of ranks for the other group
+
+* May fail in presence of large number of tied values, such as the case of dropouts (zeros) in scRNA-seq
+
+* If the conditions for a parametric test hold, then it will be typically more powerful than a non-parametric test
+-->
+
+
+## Performance of different tests 
+
+```{r echo=FALSE, out.width= "40%", out.extra='style="float:left; padding:30px;  margin-top: -85px"'}
+knitr::include_graphics('Images/DE_performance.png')
+```
+
+However:
+
+* t-test and Wilcoxon rank-sum test work well in practice, given at least few dozens cells to compare
+
+* Bulk RNA-seq analysis methods do not generally perform worse than those specifically developed for scRNA-seq
+
+* Filtering out lowly expressed genes in quite important for good performance of bulk methods (edgeR, DEseq2)
+
+(source: [Soneson & Robinson 2018](https://doi.org/10.1038/nmeth.4612))
+
+
+## So, what's really important? 
+
+* understand what are we trying to compare with the different tests (difference in mean expression, difference in probability of being expressed, probability of being highly/lowly expressed)
+
+* It’s important to understand the underlying data
+
+* It’s important to assess and **validate the results**
+
+  * Strictly speaking, identifying genes differentially expressed between clusters is statistically flawed, since the clusters were themselves defined based on the gene expression data itself. Validation is crucial as a follow-up from these analyses.
+
+
+## Things to think about: during analysis
+
+* Do not use batch-integrated expression data for differential analysis
+
+  * Instead, **include batch in the statistical model** (the `findMarkers()` function has the `block` argument to achieve this)
+
+* Depending on the method you choose use: counts, normalised counts or log-normalized counts.
+
+* Normalization strategy has a big influence on the results in differential expression.
+
+    * e.g comparing cell types with few expressed genes vs a cell type with many genes.
+
+
+## Things to think about: after analysis
+
+* A lot of what you get might be noise. Take two random set of cells and run DE and you probably with have a few significant genes with most of the commonly used tests.
+
+* Think of the results as hypotheses that need independent verification (e.g. microscopy, qPCR)
