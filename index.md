@@ -111,7 +111,7 @@ Two data sets:
     <!-- + [Exercise Solutions](scRNAseq/Markdowns/clusteringPostDsi_exercise_solution.html) -->
 * 11:05 - 11:15 10 min **break** 
 * 11:15 - 12:30 **Identification of cluster marker genes** - Hugo Tavares
-    + [Slides](Slides/MarkerIdentificationSlides.html)
+    + [Slides](Slides/09_ClusterMarkerGenes.html)
     + [Cluster marker genes](Markdowns/09_ClusterMarkerGenes.html)
     + Worksheet in `Exercises/09_ClusterMarkerGenes.R`
 * 12:30 - 13:30 **lunch break**
