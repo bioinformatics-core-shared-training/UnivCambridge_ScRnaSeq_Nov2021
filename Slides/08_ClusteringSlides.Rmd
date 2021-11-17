@@ -1,10 +1,10 @@
 ---
 title: "Introduction to single-cell RNA-seq analysis - Clustering"
 author: "Stephane Ballereau"
-date: "CRUK bioinfomatics summer school - July 2021"
+date: "November 2021"
 output:
   ioslides_presentation:
-    logo: ../Images/CRUK_CC_greyBgd.jpg
+    logo: ../Images/uniOfCamCrukLogos.png
     smaller: yes
     widescreen: yes
     css: css/stylesheet.css
@@ -33,26 +33,11 @@ library(dplyr)
   * louvain
   * leiden
 
-<!-- ## Single Cell RNAseq Analysis Workflow
-
-```{r, echo=FALSE, out.width='80%', fig.align='center'}
-knitr::include_graphics('../Images/workflow.svg')
-```
--->
-
 ## Single Cell RNAseq Analysis Workflow
 
-```{r, echo=FALSE, out.width='100%', fig.align='center'}
-knitr::include_graphics("../Images/Andrews2017_Fig1.png", auto_pdf = TRUE)
+```{r, echo=FALSE, out.width='80%', fig.align='center'}
+knitr::include_graphics('../Images/workflow2_clustering.png')
 ```
-
-<!-- ## Recap
-
-  * the data has been QCed and normalized,
-  * confounders removed,
-  * noise limited,
-  * dimensionality reduced
--->
 
 ## Motivation
 
@@ -70,6 +55,12 @@ We can now ask biological questions.
   * without any prior knowledge of the labels
   * usually using the PCA output
 
+## Single Cell RNAseq Analysis Workflow
+
+```{r, echo=FALSE, out.width='100%', fig.align='center'}
+knitr::include_graphics("../Images/Andrews2017_Fig1.png", auto_pdf = TRUE)
+```
+
 ## Motivation
 
 We will introduce three widely used clustering methods:
@@ -78,13 +69,13 @@ We will introduce three widely used clustering methods:
 * k-means
 * graph-based 
 
-The first two were developed first and are faster for small data sets
+The first two were developed first and are faster for small data sets.
 
 The third is more recent and better suited for scRNA-seq, especially large data sets.
 
 All three identify non-overlapping clusters.
 
-## Hierarchical
+## Hierarchical clustering
 
 Hierarchical clustering builds:
 
@@ -116,7 +107,7 @@ knitr::include_graphics("../Images/bioCellGenHierar2.png")
 ```
 -->
 
-## Hierarchical {.columns-2 .smaller}
+## Hierarchical clustering {.columns-2 .smaller}
 
 The raw data:
 
@@ -132,7 +123,7 @@ The hierarchical clustering dendrogram:
 knitr::include_graphics("../Images/bioCellGenHierar2.png")
 ```
 
-## Hierarchical {.columns-2 .smaller}
+## Hierarchical clustering {.columns-2 .smaller}
 
 Example: the Caron data set:
 
@@ -153,7 +144,7 @@ Cons:
   * that increase proportionally
   * to the square of the number of data points
 
-## k-means {.columns-2 .smaller}
+## k-means clustering {.columns-2 .smaller}
 
 Goal: partition cells into k different clusters.
 
@@ -179,22 +170,25 @@ Cons:
   * sensitive to outliers
   * tends to define equally-sized clusters
     
-## k-means
+## k-means clustering
 
 ```{r, echo=FALSE, out.width = '100%'}
 knitr::include_graphics("../Images/bioCellGenKmean.png", auto_pdf = TRUE)
 ```
 
-Steps:
+Set of steps to repeat:
 
 * randomly select k data points to serve as initial cluster centers,
-* for each point, 1) compute to centroids, 2) assign to closest cluster,
+* for each centers, 1) compute distance to centroids, 2) assign to closest cluster,
 * calculate the mean of each cluster (the ‘mean’ in ‘k-mean’) to define its centroid,
 * for each point compute the distance to these means to choose the closest,
-* repeat until the distance between centroids and data points is minimal (ie clusters do not change) or the maximum number of iterations is reached,
-* compute the total variation within clusters
+* repeat until the distance between centroids and data points is minimal (ie clusters do not change)
+  or the maximum number of iterations is reached,
+compute the total variation within clusters
 
-=> assign new centroids and repeat steps above
+<!--
+**=> assign new centroids and repeat steps above**
+-->
 
 ## Separatedness
 
@@ -258,6 +252,8 @@ Example with different numbers of neighbours:
 knitr::include_graphics("../Images/bioCellGenGraphDeng2.png", auto_pdf = TRUE)
 ```
 
+## Graph-based clustering
+
 Pros
 
   * fast and memory efficient (no distance matrix for all pairs of cells)
@@ -291,7 +287,7 @@ Node similarity is measured based on these walks.
 * Nodes are first each assigned their own community.
 * Pairwise distances are computed and the two closest communities are grouped.
 * These steps are repeated a given number of times to produce a dendrogram.
-* Hierarchical clustering is then applied to the distance matrix.
+  * Hierarchical clustering is applied to the distance matrix.
 * The best partition is that with the highest modularity.
 
 <!-- https://link.springer.com/article/10.1007/s11227-019-03018-x -->
