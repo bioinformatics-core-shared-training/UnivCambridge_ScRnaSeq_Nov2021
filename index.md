@@ -121,10 +121,10 @@ Two data sets:
     + [Slides](Slides/10_MultiSplCompSlides.html)
     + [Practical](Markdowns/10_MultiSplComp.html)
     + [Exercise1](Markdowns/10_MultiSplComp_exercise1.Rmd)
-    <!-- + [Exercise1 Solutions](Markdowns/10_MultiSplComp_exercise1_solutions.html) -->
+    + [Exercise1 Solutions](Markdowns/10_MultiSplComp_exercise1_solutions.html)
 * 15:25 - 15:35 10 min **break** 
 * 15:35 - 17:30 **Differential abundance between conditions** - Stephane Ballereau
     + [Slides](Slides/10_MultiSplCompSlides.html)
     + [Practical](Markdowns/10_MultiSplComp.html)
     + [Exercise2](Markdowns/10_MultiSplComp_exercise2.Rmd)
-    <!-- + [Exercise2 Solutions](Markdowns/10_MultiSplComp_exercise2_solutions.html) -->
+    + [Exercise2 Solutions](Markdowns/10_MultiSplComp_exercise2_solutions.html)
