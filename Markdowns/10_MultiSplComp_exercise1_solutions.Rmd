@@ -1,6 +1,6 @@
 ---
-title: "CRUK CI Summer School 2020 - introduction to single-cell RNA-seq analysis"
-subtitle: 'Multi-sample comparisons - Exdrcise 1'
+title: "Introduction to single-cell RNA-seq analysis"
+subtitle: 'Multi-sample comparisons - Exercise 1'
 author: "Stephane Ballereau"
 output:
   html_document:

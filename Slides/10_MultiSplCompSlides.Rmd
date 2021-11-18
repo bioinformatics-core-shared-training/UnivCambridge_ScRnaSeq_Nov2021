@@ -1,10 +1,10 @@
 ---
 title: "Introduction to single-cell RNA-seq analysis - Differential expression and abundance between conditions"
 author: "Stephane Ballereau"
-date: "CRUK bioinfomatics summer school - July 2021"
+date: "November 2021"
 output:
   ioslides_presentation:
-    logo: ../Images/CRUK_CC_greyBgd.jpg
+    logo: ../Images/uniOfCamCrukLogos.png
     smaller: yes
     widescreen: yes
     css: css/stylesheet.css
@@ -29,21 +29,21 @@ opts_chunk$set(echo = FALSE)
   
 ## Single Cell RNAseq Analysis Workflow
 
-```{r, echo=FALSE, out.width='100%', fig.align='center'}
-knitr::include_graphics("../Images/Andrews2017_Fig1.png", auto_pdf = TRUE)
+```{r, echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics("../Images/workflow2_diffExpre.png", auto_pdf = TRUE)
 ```
 
 ## Motivation
 
 Clusters and/or cell types have been identified, we now want to compare sample groups:
 
-* which genes vary in expression
-* which clusters differ in abundance
+* which genes vary in expression ?
+* which clusters differ in abundance ?
 
 Replicates are samples not cells:
 
 * single cells within a sample are not independent of each other,
-* using cells as replicates amounts to study variation among an individual
+* using cells as replicates amounts to studying variation among an individual
 * while we want to study variation across a population
 
 Pseudo-bulk:
@@ -104,14 +104,21 @@ Steps:
   * estimate the negative binomial (NB) dispersions
   * estimate the quasi-likelihood dispersions, uncertainty and variability of the per-gene variance
   
+## Single Cell RNAseq Analysis Workflow
+
+```{r, echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics("../Images/workflow2_diffAbund.png", auto_pdf = TRUE)
+```
   
 ## Differential abundance between conditions
 
-Aim: test for significant changes in per-cluster cell abundance across conditions
+Aim:
 
-Example: which cell types are depleted or enriched upon treatment?
+- test for significant changes in per-cluster cell abundance across conditions
 
-Methods: developed for flow cytometry.
+Example:
+
+- which cell types are depleted or enriched upon treatment?
 
 Steps:
 

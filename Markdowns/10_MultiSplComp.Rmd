@@ -1,5 +1,5 @@
 ---
-title: "CRUK CI Summer School 2020 - introduction to single-cell RNA-seq analysis"
+title: "Introduction to single-cell RNA-seq analysis"
 subtitle: 'Multi-sample comparisons'
 author: "Stephane Ballereau"
 output:
@@ -212,7 +212,7 @@ Variance between cells within each sample is masked, provided it does not affect
 
 #### Introduction
 
-The DE analysis will be performed using quasi-likelihood (QL) methods from the edgeR package (Robinson, McCarthy, and Smyth 2010; Chen, Lun, and Smyth 2016). This uses a negative binomial generalized linear model (NB GLM) to handle overdispersed count data in experiments with limited replication. In our case, we have biological variation with three paired replicates per condition, so edgeR (or its contemporaries) is a natural choice for the analysis.
+The DE analysis will be performed using quasi-likelihood (QL) methods from the `edgeR` package (Robinson, McCarthy, and Smyth 2010; Chen, Lun, and Smyth 2016). This uses a negative binomial generalized linear model (NB GLM) to handle overdispersed count data in experiments with limited replication. In our case, we have biological variation with three paired replicates per condition, so `edgeR` (or its contemporaries) is a natural choice for the analysis.
 
 We do not use all labels for GLM fitting as the strong DE between labels makes it difficult to compute a sensible average abundance to model the mean-dispersion trend. Moreover, label-specific batch effects would not be easily handled with a single additive term in the design matrix for the batch. Instead, we arbitrarily pick one of the labels to use for this demonstration.
 
@@ -421,7 +421,7 @@ We also list the labels that were skipped due to the absence of replicates or co
 print(metadata(de.results)$failed)
 ```
 
-### Exercise 1
+## Exercise 1
 
 Identify label-specific DE genes that are significant in 'c10' yet not DE in any other label.
 

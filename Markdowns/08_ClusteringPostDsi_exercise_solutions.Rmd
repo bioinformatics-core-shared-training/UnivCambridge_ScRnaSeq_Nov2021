@@ -1,7 +1,7 @@
 ---
-title: "CRUK CI Summer School 2021 - Introduction to single-cell RNA-seq analysis"
+title: "Introduction to single-cell RNA-seq analysis"
 author: "Stephane Ballereau"
-date: "July 2021"
+date: "November 2021"
 subtitle: "Clustering - exercise"
 output:
   html_document:
@@ -56,7 +56,7 @@ library(bluster) # scRnaSeq clustering
 library(dynamicTreeCut) # tree cutting in clustering
 library(cluster) # for silhouette
 library(igraph) # for graph-based clustering and plotting networks 
-library(reticulate) # for graph-baed clustering with leiden
+library(reticulate) # for graph-based clustering with leiden
 library(leiden) # for community detection (clustering)
 library(pheatmap) # for heatmap plotting
 library(patchwork) # to combine plots

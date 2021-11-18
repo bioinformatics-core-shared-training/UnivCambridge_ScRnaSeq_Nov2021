@@ -35,7 +35,7 @@ library(dplyr)
 
 ## Single Cell RNAseq Analysis Workflow
 
-```{r, echo=FALSE, out.width='80%', fig.align='center'}
+```{r, echo=FALSE, out.width='70%', fig.align='center'}
 knitr::include_graphics('../Images/workflow2_clustering.png')
 ```
 
@@ -291,6 +291,14 @@ Node similarity is measured based on these walks.
 * The best partition is that with the highest modularity.
 
 <!-- https://link.springer.com/article/10.1007/s11227-019-03018-x -->
+
+## Walktrap
+
+Network example:
+
+```{r, echo=FALSE, out.height='60%', out.width = '60%', fig.align="center"}
+knitr::include_graphics("../Images/clusGraphExample.png", auto_pdf = TRUE)
+```
 
 ## Louvain {.columns-2 .smaller}
 
