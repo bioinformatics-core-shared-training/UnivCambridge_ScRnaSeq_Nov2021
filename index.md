@@ -108,7 +108,7 @@ Two data sets:
 * 09:40 - 11:05 **Clustering** - Stephane Ballereau
     + [Slides](Slides/08_ClusteringSlides.html)
     + [Practical](Markdowns/08_ClusteringPostDsi.html)     
-    + [Exercise1](scRNAseq/Markdowns/08_ClusteringPostDsi_exercise.Rmd)
+    + [Exercise1](Markdowns/08_ClusteringPostDsi_exercise.Rmd)
     <!-- + [Exercise Solutions](scRNAseq/Markdowns/08_ClusteringPostDsi_exercise_solutions.html) -->
 * 11:05 - 11:15 10 min **break** 
 * 11:15 - 12:30 **Identification of cluster marker genes** - Hugo Tavares
