@@ -100,8 +100,9 @@ Two data sets:
 * 15:35 - 17:30 **Batch correction and data set integration** - Abigail Edwards
     + [Slides](Slides/07_DataIntegrationAndBatchCorrectionSlides.html)  
     + [Data set integration](Markdowns/07_DataSetIntegration_PBMMC_ETV6-RUNX1.html)
-    <!-- extended ? -->
-
+    + [Solutions](Markdowns/07_DataIntegrationChallengeSolution.html)
+    + [Batch Correction extended example](Markdowns/07_BatchCorrection.html)
+    
 ### Day 3: Thursday 18th Nov
 
 * 09:30 - 09:40 Recap <!-- Stephane -->
