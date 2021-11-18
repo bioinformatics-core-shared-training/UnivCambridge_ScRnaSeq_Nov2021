@@ -75,7 +75,7 @@ Two data sets:
 * 10:25 - 10:30 5 min **break** 
 * 10:30 - 10:40 **Preamble**: data set and workflow - Stephane Ballereau
     + [Slides](Slides/02_PreambleSlides.html)
-* 10:40 - 12:30 Library structure, **cellranger** for alignment and cell calling, preprocessing - Stephane Ballereau
+* 10:40 - 12:30 Library structure, **cellranger** for alignment and cell calling - Stephane Ballereau
     + [Slides](Slides/03_CellRangerSlides.html) <!-- \([pdf](scRNAseq/Slides/CellRangerSlides.pdf)\) -->
     + [Alignment with Cell Ranger](Markdowns/03_CellRanger.html)
 * 12:30 - 13:30 **lunch break**
@@ -89,40 +89,41 @@ Two data sets:
 * 09:30 - 09:40 Recap <!-- Stephane -->
 * 09:40 - 12:30 **Normalisation** - Stephane Ballereau
     + [Slides](Slides/05_NormalisationSlides.html) <!-- \([pdf](scRNAseq/Slides/05_normalisationSlides.pdf)\) -->
-    + [Practical](Markdowns/05_normalisation.html)     
-    + [Exercises](Markdowns/05_normalisation_exercises.html)
-    + [Exercise Solutions](Markdowns/05_normalisation_exercises_solutions.html)
+    + [Practical](Markdowns/05_Normalisation.html)     
+    + [Exercises](Markdowns/05_Normalisation_exercises.html)
+    + [Exercise Solutions](Markdowns/05_Normalisation_exercises_solutions.html)
 * 12:30 - 13:30 **lunch break**
 * 13:30 - 15:25 **Feature selection and dimensionality reduction** - Hugo Tavares
     + [Slides](Slides/06_FeatureSelectionAndDimensionalityReduction_slides.html)
     + [Materials](Markdowns/06_FeatureSelectionAndDimensionalityReduction.html)
 * 15:25 - 15:35 10 min **break**
 * 15:35 - 17:30 **Batch correction and data set integration** - Abigail Edwards
-    + [Slides](Slides/DataIntegrationAndBatchCorrectionSlides.html)  
-    + [Data set integration](Markdowns/dataSetIntegration_PBMMC_ETV6-RUNX1.html)
+    + [Slides](Slides/07_DataIntegrationAndBatchCorrectionSlides.html)  
+    + [Data set integration](Markdowns/07_DataSetIntegration_PBMMC_ETV6-RUNX1.html)
     <!-- extended ? -->
 
 ### Day 3: Thursday 18th Nov
 
 * 09:30 - 09:40 Recap <!-- Stephane -->
 * 09:40 - 11:05 **Clustering** - Stephane Ballereau
-    + [Slides](Slides/clusteringSlides.html)
-    + [Practical](Markdowns/clusteringPostDsi.html)     
-    <!-- + [Exercise Solutions](scRNAseq/Markdowns/clusteringPostDsi_exercise_solution.html) -->
+    + [Slides](Slides/08_ClusteringSlides.html)
+    + [Practical](Markdowns/08_ClusteringPostDsi.html)     
+    + [Exercise1](scRNAseq/Markdowns/08_ClusteringPostDsi_exercise.Rmd)
+    <!-- + [Exercise Solutions](scRNAseq/Markdowns/08_ClusteringPostDsi_exercise_solutions.html) -->
 * 11:05 - 11:15 10 min **break** 
 * 11:15 - 12:30 **Identification of cluster marker genes** - Hugo Tavares
-    + [Slides](Slides/MarkerIdentificationSlides.html)
-    + [Cluster marker genes](Markdowns/ClusterMarkerGenes2021.html)
-    <!-- + [Exercise Solutions](scRNAseq/CourseMaterials/Exercises/ClusterMarkerGenes2021.Exercise.Solutions.html) -->
+    + [Slides](Slides/09_ClusterMarkerGenes.html)
+    + [Cluster marker genes](Markdowns/09_ClusterMarkerGenes.html)
+    + Worksheet in `Exercises/09_ClusterMarkerGenes.R`
 * 12:30 - 13:30 **lunch break**
 * 13:30 - 15:25 **Differential expression between conditions** - Stephane Ballereau
-    + [Slides](Slides/multiSplCompSlides.html)
-    + [Practical](Markdowns/multiSplComp.html)     
-    <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/multiSplComp_exercise1_solutions.html) -->
-    <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/multiSplComp_exercise2_solutions.html) -->
+    + [Slides](Slides/10_MultiSplCompSlides.html)
+    + [Practical](Markdowns/10_MultiSplComp.html)     
+    <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/10_MultiSplComp_exercise1_solutions.html) -->
+    <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/10_MultiSplComp_exercise2_solutions.html) -->
 * 15:25 - 15:35 10 min **break** 
 * 15:35 - 17:30 **Differential abundance between conditions** - Stephane Ballereau
-    + [Slides](Slides/multiSplCompSlides.html)
-    + [Practical](Markdowns/multiSplComp.html)     
-    <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/multiSplComp_exercise1_solutions.html) -->
-    <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/multiSplComp_exercise2_solutions.html) -->
+    + [Slides](Slides/10_MultiSplCompSlides.html)
+    + [Practical](Markdowns/10_MultiSplComp.html)     
+    <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/10_MultiSplComp_exercise1_solutions.html) -->
+    <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/10_MultiSplComp_exercise2_solutions.html) -->
