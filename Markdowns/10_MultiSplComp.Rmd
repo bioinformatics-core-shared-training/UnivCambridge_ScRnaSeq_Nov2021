@@ -460,7 +460,7 @@ y.ab <- y.ab[keep,]
 summary(keep)
 ```
 
-Unlike DE analyses, we do not perform an additional normalization step with calcNormFactors(). This means that we are only normalizing based on the “library size”, i.e., the total number of cells in each sample. Any changes we detect between conditions will subsequently represent differences in the proportion of cells in each cluster. The motivation behind this decision is discussed in more detail in Section 14.4.3.
+Unlike DE analyses, we do not perform an additional normalization step with calcNormFactors(). This means that we are only normalizing based on the “library size”, i.e., the total number of cells in each sample. Any changes we detect between conditions will subsequently represent differences in the proportion of cells in each cluster.
 
 Here, the log-fold change in our model refers to the change in cell abundance between sample groups, rather than the change in gene expression.
 

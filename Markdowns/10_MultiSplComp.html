@@ -759,7 +759,7 @@ y.ab &lt;- y.ab[keep,]
 summary(keep)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical       1      13</code></pre>
-<p>Unlike DE analyses, we do not perform an additional normalization step with calcNormFactors(). This means that we are only normalizing based on the “library size”, i.e., the total number of cells in each sample. Any changes we detect between conditions will subsequently represent differences in the proportion of cells in each cluster. The motivation behind this decision is discussed in more detail in Section 14.4.3.</p>
+<p>Unlike DE analyses, we do not perform an additional normalization step with calcNormFactors(). This means that we are only normalizing based on the “library size”, i.e., the total number of cells in each sample. Any changes we detect between conditions will subsequently represent differences in the proportion of cells in each cluster.</p>
 <p>Here, the log-fold change in our model refers to the change in cell abundance between sample groups, rather than the change in gene expression.</p>
 <pre class="r"><code>design &lt;- model.matrix(~factor(SampleGroup), y.ab$samples)</code></pre>
 <p>We use the estimateDisp() function to estimate the NB dispersion for each cluster. We turn off the trend as we do not have enough points for its stable estimation.</p>
