@@ -108,7 +108,7 @@ Two data sets:
 * 09:30 - 09:40 Recap <!-- Stephane -->
 * 09:40 - 11:05 **Clustering** - Stephane Ballereau
     + [Slides](Slides/08_ClusteringSlides.html)
-    + [Practical](Markdowns/08_ClusteringPostDsi.html)     
+    + [Practical](Markdowns/08_ClusteringPostDsi.html)
     + [Exercise1](Markdowns/08_ClusteringPostDsi_exercise.Rmd)
     + [Exercise Solutions](Markdowns/08_ClusteringPostDsi_exercise_solutions.html)
 * 11:05 - 11:15 10 min **break** 
@@ -119,12 +119,12 @@ Two data sets:
 * 12:30 - 13:30 **lunch break**
 * 13:30 - 15:25 **Differential expression between conditions** - Stephane Ballereau
     + [Slides](Slides/10_MultiSplCompSlides.html)
-    + [Practical](Markdowns/10_MultiSplComp.html)     
-    <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/10_MultiSplComp_exercise1_solutions.html) -->
-    <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/10_MultiSplComp_exercise2_solutions.html) -->
+    + [Practical](Markdowns/10_MultiSplComp.html)
+    + [Exercise1](Markdowns/10_MultiSplComp_exercise1.Rmd)
+    <!-- + [Exercise1 Solutions](Markdowns/10_MultiSplComp_exercise1_solutions.html) -->
 * 15:25 - 15:35 10 min **break** 
 * 15:35 - 17:30 **Differential abundance between conditions** - Stephane Ballereau
     + [Slides](Slides/10_MultiSplCompSlides.html)
-    + [Practical](Markdowns/10_MultiSplComp.html)     
-    <!-- + [Exercise1 Solutions](scRNAseq/Markdowns/10_MultiSplComp_exercise1_solutions.html) -->
-    <!-- + [Exercise2 Solutions](scRNAseq/Markdowns/10_MultiSplComp_exercise2_solutions.html) -->
+    + [Practical](Markdowns/10_MultiSplComp.html)
+    + [Exercise2](Markdowns/10_MultiSplComp_exercise2.Rmd)
+    <!-- + [Exercise2 Solutions](Markdowns/10_MultiSplComp_exercise2_solutions.html) -->
