@@ -75,7 +75,7 @@ Two data sets:
 * 10:25 - 10:30 5 min **break** 
 * 10:30 - 10:40 **Preamble**: data set and workflow - Stephane Ballereau
     + [Slides](Slides/02_PreambleSlides.html)
-* 10:40 - 12:30 Library structure, **cellranger** for alignment and cell calling, preprocessing - Stephane Ballereau
+* 10:40 - 12:30 Library structure, **cellranger** for alignment and cell calling - Stephane Ballereau
     + [Slides](Slides/03_CellRangerSlides.html) <!-- \([pdf](scRNAseq/Slides/CellRangerSlides.pdf)\) -->
     + [Alignment with Cell Ranger](Markdowns/03_CellRanger.html)
 * 12:30 - 13:30 **lunch break**
